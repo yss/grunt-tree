@@ -12,6 +12,66 @@ var path = require('path'),
     fs = require('fs'),
     crypto = require('crypto');
 
+/**
+ * parse a path object to a tree object
+ * @param {Object} obj
+ * @param {Number|Boolean} md5
+ * @return {Object}
+ */
+function parseToTree(obj, md5) {
+    var key, i, arr, len, tmp, fileArr,
+        tree = {};
+    for (key in obj) {
+        tmp = tree;
+        arr = obj[key].split(path.sep);
+
+        for (i = 0, len = arr.length - 1; i < len; i++) {
+            tmp = tmp[arr[i]] = {};
+        }
+
+        // handle last one
+        fileArr = arr[i].split('.');
+        if (md5) {
+            fileArr.pop();
+        }
+        // if has postfix, remove it
+        if (fileArr.length > 1) {
+            fileArr.pop();
+        }
+        // get the origin value
+        tmp[fileArr.join('.')] = obj[key];
+    }
+
+    return tree;
+}
+
+// file with lost postfix
+function getFileName(filename, version) {
+    var pos = filename.lastIndexOf('.');
+    if (version) {
+        version = '.' + version;
+        return ~pos ? filename.substring(0, pos) + version + filename.slice(pos) : filename + version;
+    } else {
+        return ~pos ? filename.substring(0, pos) : filename;
+    }
+}
+
+// get md5 version of file
+function getMd5Version(str, encoding, len) {
+    str = str || Math.random().toString();
+    str = crypto.createHash('md5').update(str).digest(encoding || 'hex');
+    return len ? str.slice(0, len) : str;
+}
+
+function getMd5Name(abspath, filename, md5) {
+    if (md5) {
+        var len = typeof md5 === 'number' ? md5 : 0,
+            version = getMd5Version(fs.readFileSync(abspath), '', len);
+        return getFileName(filename, version);
+    }
+    return filename;
+}
+
 module.exports = function(grunt) {
     grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
@@ -22,7 +82,7 @@ module.exports = function(grunt) {
         }), typeReg;
 
         if (grunt.util.kindOf(options.type) === 'array') {
-            typeReg = new RegExp('\.(?:' + options.type.join('|') + ')$');
+            typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
         } else {
             typeReg = false;
         }
@@ -74,61 +134,4 @@ module.exports = function(grunt) {
         });
     });
 
-};
-
-/**
- * parse a path object to a tree object
- */
-function parseToTree(obj, md5) {
-    var key, i, arr, len, tmp,
-        tree = {};
-    for (key in obj) {
-        tmp = tree;
-        obj[key].split(path.sep).forEach(function(item, i, arr) {
-            // last
-            if (i === arr.length - 1) {
-                var fileArr = item.split('.');
-                if (md5) {
-                    fileArr.pop();
-                }
-                // if has postfix, remove it
-                if (fileArr.length > 1) {
-                    fileArr.pop();
-                }
-                // get the origin value
-                tmp[fileArr.join('.')] = arr.join(path.sep);
-            } else {
-                tmp = tmp[item] = {};
-            }
-        });
-    }
-
-    return tree;
-}
-
-// file with lost postfix
-function getFileName(filename, version) {
-    var pos = filename.lastIndexOf('.');
-    if (version) {
-        version = '.' + version;
-        return ~pos ? filename.substring(0, pos) + version + filename.slice(pos) : filename + version;
-    } else {
-        return ~pos ? filename.substring(0, pos) : filename;
-    }
-};
-
-function getMd5Name(abspath, filename, md5) {
-    if (md5) {
-        var len = typeof md5 === 'number' ? md5 : 0,
-            version = getMd5Version(fs.readFileSync(abspath), '', len);
-        return getFileName(filename, version);
-    }
-    return filename;
-};
-
-// get md5 version of file
-function getMd5Version(str, encoding, len) {
-    str = str || Math.random().toString();
-    str = crypto.createHash('md5').update(str).digest(encoding || 'hex');
-    return len ? str.slice(0, len) : str;
 };

@@ -52,57 +52,92 @@ grunt.initConfig({
 Type: `Boolean|Number`
 Default value: `false`
 
-A string value that is used to do something with whatever.
+Get the md5 value of the file and put in file name. If the value is number, then cut the full md5 value to the length.
 
 #### options.format
 Type: `Boolean`
 Default value: `false`
 
-A string value that is used to do something else with whatever else.
+A boolean value that what you want the format of result to be.
+
+The Default result is the tree format like the command tree. And if format set to true, then output a one-to-one mode.
 
 #### options.type
-Type: `Boolean`
+Type: `Array`
 Default value: `false`
 
-A string value that is used to do something else with whatever else.
+Filter the postfix of the files you set.
 
 #### options.recurse
 Type: `Boolean`
-Default value: `false`
+Default value: `true`
 
-A string value that is used to do something else with whatever else.
+Whether recurse in your given directory.
+
+Anyway, see the examples.
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
 
 ```js
 grunt.initConfig({
-  tree: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
+    tree: {
+        default: {
+            options: {},
+            files: [
+                {
+                    src: ['test/'],
+                    dest: 'tmp/test.json'
+                }
+            ]
+        }
+    }
+});
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+// If the have files: "a.js", "js/b.js", "c" in the test directory,
+// 1. run grunt, then the result will like:
+{
+    "a": "a.css",
+    "js": {
+        "b": "js/b.js"
+    },
+    "c": "c"
+}
 
-```js
-grunt.initConfig({
-  tree: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
+// 2. change the options to: { md5 : 6 }
+{
+    "a": "a.7sxs9c.css",
+    "js": {
+        "b": "js/b.f98xs1.js"
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
+    "c": "c.jyg87s"
+}
+
+// 3. change the options to: { format: true }
+{
+    "a": "a.css",
+    "b": "js/b.js"
+    "c": "c"
+}
+
+// 4. change the options to: { type: ["js", "css"] }
+{
+    "a": "a.css",
+    "js": {
+        "b": "js/b.js"
+    }
+}
+
+// 5. change the options to: { recurse: false }
+{
+    "a": "a.css",
+    "c": "c"
+}
+
+// 6. try to mix the options, and have a look.
+...
+
 ```
 
 ## Contributing
