@@ -26,11 +26,55 @@ module.exports = function(grunt) {
 
         // Configuration to be run (and then tested).
         tree: {
-            test: {
+            noOptions: {
                 files: [
                     {
                         src: ['test/'],
-                        dest: 'tmp/a.json'
+                        dest: 'tmp/noOptions.json'
+                    }
+                ]
+            },
+            noRecurse: {
+                options: {
+                    recurse: false
+                },
+                files: [
+                    {
+                        src: ['test/'],
+                        dest: 'tmp/noRecurse.json'
+                    }
+                ]
+            },
+            md5: {
+                options: {
+                    md5: 8
+                },
+                files: [
+                    {
+                        src: ['test/'],
+                        dest: 'tmp/md5.json'
+                    }
+                ]
+            },
+            format: {
+                options: {
+                    format: true
+                },
+                files: [
+                    {
+                        src: ['test/'],
+                        dest: 'tmp/format.json'
+                    }
+                ]
+            },
+            type: {
+                options: {
+                    type: ['js']
+                },
+                files: [
+                    {
+                        src: ['test/'],
+                        dest: 'tmp/type.json'
                     }
                 ]
             }

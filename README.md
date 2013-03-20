@@ -1,4 +1,5 @@
 # grunt-tree
+Parse a directory to a tree with json format.
 
 > The best Grunt plugin ever.
 
@@ -26,10 +27,20 @@ In your project's Gruntfile, add a section named `tree` to the data object passe
 grunt.initConfig({
   tree: {
     options: {
-      // Task-specific options go here.
+        // md5: boolean or number [1-32] | default: false
+        // format: | boolean default: false
+        // type: array | default: []
+        // recurse: boolean | default: true
     },
     your_target: {
-      // Target-specific file lists and/or options go here.
+      /** contents like this:
+        files: [
+            {
+                src: ['relativePath/'],
+                dest: 'saveTheResult/'
+            }
+        ]
+      */
     },
   },
 })
@@ -37,15 +48,27 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+#### options.md5
+Type: `Boolean|Number`
+Default value: `false`
 
 A string value that is used to do something with whatever.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.format
+Type: `Boolean`
+Default value: `false`
+
+A string value that is used to do something else with whatever else.
+
+#### options.type
+Type: `Boolean`
+Default value: `false`
+
+A string value that is used to do something else with whatever else.
+
+#### options.recurse
+Type: `Boolean`
+Default value: `false`
 
 A string value that is used to do something else with whatever else.
 
