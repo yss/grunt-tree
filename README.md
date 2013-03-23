@@ -105,23 +105,24 @@ grunt.initConfig({
     "c": "c"
 }
 
-// 2. change the options to: { md5 : 6 }
+// 2. change the options to: { md5 : 6 }, and result will be like:
 {
-    "a": "a.7sxs9c.css",
+    "a": "a.7abc9c.css",
     "js": {
-        "b": "js/b.f98xs1.js"
+        "b": "js/b.f98ac1.js"
     },
-    "c": "c.jyg87s"
+    "c": "c.4e287a"
 }
 
-// 3. change the options to: { format: true }
+// 3. change the options to: { format: true }, and result will be like:
+
 {
     "a": "a.css",
     "b": "js/b.js"
     "c": "c"
 }
 
-// 4. change the options to: { type: ["js", "css"] }
+// 4. change the options to: { type: ["js", "css"] }, and result will be like:
 {
     "a": "a.css",
     "js": {
@@ -129,7 +130,7 @@ grunt.initConfig({
     }
 }
 
-// 5. change the options to: { recurse: false }
+// 5. change the options to: { recurse: false }, and result will be like:
 {
     "a": "a.css",
     "c": "c"
