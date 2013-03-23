@@ -26,7 +26,10 @@ function parseToTree(obj, md5) {
         arr = obj[key].split(path.sep);
 
         for (i = 0, len = arr.length - 1; i < len; i++) {
-            tmp = tmp[arr[i]] = {};
+            if (!tmp[arr[i]]) {
+                tmp[arr[i]] = {};
+            }
+            tmp = tmp[arr[i]];
         }
 
         // handle last one
