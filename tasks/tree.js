@@ -113,6 +113,8 @@ module.exports = function(grunt) {
             });
 
             function toTree(abspath, subdir, filename) {
+                // ensure subdir is not undefined
+                subdir = subdir || "";
                 // ignore hidden file
                 if (filename.indexOf('.') === 0) {
                     grunt.log.writeln('Ignore file: ' + filename);
