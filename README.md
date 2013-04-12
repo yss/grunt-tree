@@ -4,7 +4,7 @@ Parse a directory to a tree with json format.
 > The best Grunt plugin ever.
 
 ## Getting Started
-This plugin requires Grunt `~0.4.1`
+This plugin requires Grunt `>=0.4.0`
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
@@ -60,7 +60,9 @@ Default value: `false`
 
 A boolean value that what you want the format of result to be.
 
-The Default result is the tree format like the command tree. And if format set to true, then output a one-to-one mode.
+The Default result is the tree format like the command tree.
+
+And if format set to true, then output a one-to-one mode. Becareful to set format to true, it will overwrite the same file name.
 
 #### options.type
 Type: `Array`
@@ -88,14 +90,14 @@ grunt.initConfig({
             files: [
                 {
                     src: ['test/'],
-                    dest: 'tmp/test.json'
+                    dest: '/tmp/test.json'
                 }
             ]
         }
     }
 });
 
-// If the have files: "a.js", "js/b.js", "c" in the test directory,
+// If the have files: "a.css", "js/b.js", "c" in the test directory,
 // 1. run grunt, then the result will like:
 {
     "a": "a.css",
@@ -105,13 +107,13 @@ grunt.initConfig({
     "c": "c"
 }
 
-// 2. change the options to: { md5 : 6 }, and result will be like:
+// 2. change the options to: { md5 : 8 }, and result will be like:
 {
-    "a": "a.7abc9c.css",
+    "a": "a.e8dcfa25.css",
     "js": {
-        "b": "js/b.f98ac1.js"
+        "b": "js/b.59efd297.js"
     },
-    "c": "c.4e287a"
+    "c": "c.a8e91771"
 }
 
 // 3. change the options to: { format: true }, and result will be like:
@@ -140,9 +142,13 @@ grunt.initConfig({
 ...
 
 ```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+### Test
+```shell
+# Once you run the follow command in console, you should run `npm install` before.
+grunt test
+```
 
 ## Release History
-_(Nothing yet)_
+
+1. Compatibility fix for node 0.10.x [2013/04/12]
+2. Add nodeunit test case [2013/04/12]

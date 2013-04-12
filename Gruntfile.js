@@ -8,6 +8,8 @@
 
 'use strict';
 
+var SRC_PATH = 'test/tree/';
+
 module.exports = function(grunt) {
 
     // Project configuration.
@@ -29,7 +31,7 @@ module.exports = function(grunt) {
             noOptions: {
                 files: [
                     {
-                        src: ['test/'],
+                        src: [SRC_PATH],
                         dest: 'tmp/noOptions.json'
                     }
                 ]
@@ -40,7 +42,7 @@ module.exports = function(grunt) {
                 },
                 files: [
                     {
-                        src: ['test/'],
+                        src: [SRC_PATH],
                         dest: 'tmp/noRecurse.json'
                     }
                 ]
@@ -51,7 +53,7 @@ module.exports = function(grunt) {
                 },
                 files: [
                     {
-                        src: ['test/'],
+                        src: [SRC_PATH],
                         dest: 'tmp/md5.json'
                     }
                 ]
@@ -62,18 +64,18 @@ module.exports = function(grunt) {
                 },
                 files: [
                     {
-                        src: ['test/'],
+                        src: [SRC_PATH],
                         dest: 'tmp/format.json'
                     }
                 ]
             },
             type: {
                 options: {
-                    type: ['js']
+                    type: ['css', 'js']
                 },
                 files: [
                     {
-                        src: ['test/'],
+                        src: [SRC_PATH],
                         dest: 'tmp/type.json'
                     }
                 ]
@@ -98,7 +100,7 @@ module.exports = function(grunt) {
     // Whenever the "test" task is run, first clean the "tmp" dir, then run this
     // plugin's task(s), then test the result.
     // grunt.registerTask('test', ['clean', 'tree', 'nodeunit']);
-    grunt.registerTask('test', ['clean', 'jshint', 'tree']);
+    grunt.registerTask('test', ['clean', 'jshint', 'tree', 'nodeunit']);
 
     // By default, lint and run all tests.
     // grunt.registerTask('default', ['jshint', 'test']);

@@ -1,7 +1,7 @@
-node_modules
+node_modules/
 npm-debug.log
-tmp
-.swp
-.swo
-.swn
-~
+tmp/
+*.swp
+*.swo
+*.swn
+*~
