@@ -71,5 +71,14 @@ exports.tree = {
 
         test.deepEqual(actual, expected, 'Not equal at type method.');
         test.done();
+    },
+    ext: function(test) {
+        test.expect(1);
+
+        var actual = grunt.file.readJSON('tmp/ext.json'),
+            expected = grunt.file.readJSON('test/expected/ext.json');
+
+        test.deepEqual(actual, expected, 'Not equal at type method.');
+        test.done();
     }
 };

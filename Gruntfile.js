@@ -79,6 +79,20 @@ module.exports = function(grunt) {
                         dest: 'tmp/type.json'
                     }
                 ]
+            },
+            ext: {
+                options: {
+                    format: true,
+                    ext: {
+                        level: 1
+                    }
+                },
+                files: [
+                    {
+                        src: [SRC_PATH],
+                        dest: 'tmp/ext.json'
+                    }
+                ]
             }
         },
 

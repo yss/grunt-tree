@@ -59,6 +59,19 @@ function getFileName(filename, version) {
     }
 }
 
+// get the prefix with subdir
+function getExtFileName(subdir, ext, filename) {
+    var prefix;
+    filename = getFileName(filename);
+    if (ext.level > 0 && subdir) {
+        prefix = subdir.split('/')[ext.level - 1];
+        if (prefix) {
+            filename = prefix + ext.hyphen + filename;
+        }
+    }
+    return filename;
+}
+
 // get md5 version of file
 function getMd5Version(str, encoding, len) {
     str = str || Math.random().toString();
@@ -80,9 +93,22 @@ module.exports = function(grunt) {
         var options = this.options({
             recurse: true,
             // type: [],
+            ext: { // can be covered
+                // level: 0,
+                // hyphen: '-'
+            },
             md5: false,
             format: false
         }), typeReg;
+
+        if (!options.ext.hyphen) {
+            options.ext.hyphen = '-';
+        }
+
+        if (options.ext.level > 0 && !options.format) {
+            grunt.fail.fatal('For use the ext option, you must set "format: true" in your options.');
+            return;
+        }
 
         if (grunt.util.kindOf(options.type) === 'array') {
             typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
@@ -113,6 +139,7 @@ module.exports = function(grunt) {
             });
 
             function toTree(abspath, subdir, filename) {
+                var extFileName;
                 // ensure subdir is not undefined
                 subdir = subdir || "";
                 // ignore hidden file
@@ -125,7 +152,12 @@ module.exports = function(grunt) {
                     if (typeReg && !typeReg.test(filename)) {
                         return;
                     }
-                    tree[getFileName(filename)] = path.join(subdir, getMd5Name(abspath, filename, options.md5));
+                    if (options.format) {
+                        extFileName = getExtFileName(subdir, options.ext, filename);
+                    } else {
+                        extFileName = getFileName(filename);
+                    }
+                    tree[extFileName] = path.join(subdir, getMd5Name(abspath, filename, options.md5));
                 }
             }
 

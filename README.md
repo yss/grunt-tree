@@ -1,6 +1,26 @@
 # grunt-tree
 Parse a directory to a tree with json format.
 
+## Why I writen this plugin?
+I need build my static files with md5 version. I want to get this:
+``` js
+// js.json
+{
+    "base": "js/base.xxx.js",
+    "jquery": "js/jquery.xxx.js"
+}
+// or
+{
+    "www-base": "www/js/base.xxx.js",
+    "mobile-base": "mobile/js/base.xxx.js"
+}
+// css.json
+{
+    "base": "css/base.xxx.css"
+}
+```
+Then, I can get the real path via a function, no matter what the environment is development or production.
+
 > The best Grunt plugin ever.
 
 ## Getting Started
@@ -76,6 +96,17 @@ Default value: `true`
 
 Whether recurse in your given directory.
 
+#### options.ext
+Type: `Object`
+Default value: `{ level:0, hyphen: "-" }`
+
+There is a new option for resolve the problem of the same name in file. 
+And the form option must be set to true.
+
+The level option in options.ext means the subdirectory level.
+If file relative path is 'www/css/base.css' and level set to 1, then the result will be: `"www-base": "www/css/base.css"`.
+And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
+
 Anyway, see the examples.
 
 ### Usage Examples
@@ -138,10 +169,18 @@ grunt.initConfig({
     "c": "c"
 }
 
-// 6. try to mix the options, and have a look.
+// 6. change the options to : { format: true, ext: { level: 1, hyphen: "-" } }, and result will be like:
+// Attention: if we use ext option, and the format must be set to true.
+{
+    "a": "a.css",
+    "c":"c",
+    "js-b":"js/b.js"
+}
+// 7. try to mix the options, and have a look.
 ...
 
 ```
+
 ### Test
 ```shell
 # Once you run the follow command in console, you should run `npm install` before.
@@ -152,3 +191,4 @@ grunt test
 
 1. Compatibility fix for node 0.10.x [2013/04/12]
 2. Add nodeunit test case [2013/04/12]
+3. Add ext option for avoid the same name of key [2013/06/03]
