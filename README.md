@@ -191,7 +191,7 @@ grunt.initConfig({
 ...
 
 ```
-#### Real example in my project
+#### A real example
 ```
 // Gruntfile.js
 
@@ -274,5 +274,5 @@ grunt test
 
 1. Compatibility fix for node 0.10.x. [2013/04/12] => for 0.4.1
 2. Add nodeunit test case. [2013/04/12] => for 0.4.2
-3. Add ext option for avoid the same name of key. [2013/06/03] => for 0.4.3
-4. Add cwd option for flexible configuration.  [2013/07/23] => for 0.4.4
+3. Add `ext` option for avoid the same name of key. [2013/06/03] => for 0.4.3
+4. Add `cwd` option for flexible configuration.  [2013/07/23] => for 0.4.4
