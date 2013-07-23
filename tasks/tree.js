@@ -98,6 +98,7 @@ module.exports = function(grunt) {
                 // hyphen: '-'
             },
             md5: false,
+            cwd: '', // relative to the src directory
             format: false
         }), typeReg;
 
@@ -126,6 +127,9 @@ module.exports = function(grunt) {
                     return true;
                 }
             }).forEach(function(filepath) {
+                if (options.cwd) {
+                    filepath = path.join(filepath, options.cwd);
+                }
                 if (options.recurse) {
                     grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
                         toTree(abspath, subdir, filename);
@@ -157,7 +161,7 @@ module.exports = function(grunt) {
                     } else {
                         extFileName = getFileName(filename);
                     }
-                    tree[extFileName] = path.join(subdir, getMd5Name(abspath, filename, options.md5));
+                    tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
                 }
             }
 

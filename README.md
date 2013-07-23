@@ -96,6 +96,12 @@ Default value: `true`
 
 Whether recurse in your given directory.
 
+#### options.cwd
+Type: `String`
+Default Value: `''`
+
+Relative to the src directory.
+
 #### options.ext
 Type: `Object`
 Default value: `{ level:0, hyphen: "-" }`
@@ -108,6 +114,11 @@ If file relative path is 'www/css/base.css' and level set to 1, then the result 
 And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
 
 Anyway, see the examples.
+
+### Caution
+This task is not support `Building the files object dynamically` in configuring-tasks of grunt.
+
+Go to [Building the files object dynamically](http://gruntjs.com/configuring-tasks#building-the-files-object-dynamically), see more infomation.
 
 ### Usage Examples
 
@@ -180,6 +191,78 @@ grunt.initConfig({
 ...
 
 ```
+#### Real example in my project
+```
+// Gruntfile.js
+
+var STATIC_PATH = 'static/',
+    BUILD_PATH = 'build/';
+
+module.exports = function(grunt) {
+    var config = {
+        tree: {
+            js: {
+                options: {
+                    format: true,
+                    md5: 8,
+                    type: ['js'],
+                    ext: {
+                        level: 1
+                    }
+                },
+                files: [
+                    {
+                        src: [STATIC_PATH],
+                        dest: BUILD_PATH + 'data/js.json'
+                    }
+                ]
+            },
+            css: {
+                options: {
+                    format: true,
+                    md5: 8,
+                    type: ['css'],
+                    ext: {
+                        level: 1
+                    }
+                },
+                files: [
+                    {
+                        src: [STATIC_PATH],
+                        dest: BUILD_PATH + 'data/css.json'
+                    }
+                ]
+            }
+        },
+        genStaticConfig: {
+            build: []
+        }
+    };
+
+    // Project Configuration
+    grunt.initConfig(config);
+
+    // load grunt tree module.
+    grunt.loadNpmTasks('grunt-tree');
+
+    grunt.registerMultiTask('genStaticConfig', 'generate static config files with js.json and css.json', function() {
+        grunt.config('tree.css.options.md5', false);
+        var files = grunt.config('tree.css.files');
+        files[0].dest = 'data/css.json';
+        grunt.config('tree.css.files', files);
+
+        grunt.config('tree.js.options.md5', false);
+        files = grunt.config('tree.js.files');
+        files[0].dest = 'data/js.json';
+        grunt.config('tree.js.files', files);
+    });
+    
+    // for production
+    grunt.registerTask('static', ['tree']);
+    // for development
+    grunt.registerTask('buildstatic', ['genStaticConfig', 'tree']);
+};
+```
 
 ### Test
 ```shell
@@ -189,6 +272,7 @@ grunt test
 
 ## Release History
 
-1. Compatibility fix for node 0.10.x [2013/04/12]
-2. Add nodeunit test case [2013/04/12]
-3. Add ext option for avoid the same name of key [2013/06/03]
+1. Compatibility fix for node 0.10.x. [2013/04/12] => for 0.4.1
+2. Add nodeunit test case. [2013/04/12] => for 0.4.2
+3. Add ext option for avoid the same name of key. [2013/06/03] => for 0.4.3
+4. Add cwd option for flexible configuration.  [2013/07/23] => for 0.4.4
