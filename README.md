@@ -191,8 +191,84 @@ grunt.initConfig({
 ...
 
 ```
-#### A real example
+#### Two real example
+```js
+var APP_NAME = 'imovie',
+    PATH_TMP = 'tmp/';
+
+var deps = {};
+
+function getVersion(filepath, jsonFile, grunt) {
+    grunt.log.writeln(filepath, jsonFile).ok();
+    if (!deps[jsonFile]) {
+        deps[jsonFile] = grunt.file.readJSON(jsonFile);
+        grunt.log.writeln('Loading file:', jsonFile);
+        grunt.log.writeln('Content is:', deps[jsonFile]);
+    }
+    var filename = filepath.match(/(?:^|\/)([^\/]+)\.(js|css|less)$/)[1];
+    return deps[jsonFile][filename];
+}
+
+module.exports = function(grunt) {
+    var config = {
+        pkg: grunt.file.readJSON('package.json'),
+        uglify: {
+            options: {
+                compress: true,
+                banner: '/*! ©<%= pkg.name %> <%= pkg.version %> */\n'
+            },
+            build: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: PATH_SRC,
+                        src: [APP_NAME + '/*.js', APP_NAME + '/**/*.js'],
+                        dest: PATH_DEST,
+                        ext: '.js',
+                        rename: function(dest, src) {
+                            var version = getVersion(src, PATH_TMP + APP_NAME + '.json', grunt);
+                            return version && (dest + version);
+                        }
+                    }
+                ]
+            }
+        },
+        tree: {
+            options: {
+                format: true,
+                md5: 8
+            },
+            js: {
+                options: {
+                    cwd: APP_NAME + '/',
+                    type: ['js']
+                },
+                files: [
+                    {
+                        src: PATH_SRC,
+                        dest: PATH_TMP + APP_NAME + '.json'
+                    }
+                ]
+            }
+        }
+    };
+    grunt.initConfig(config);
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-tree');
+
+    grunt.registerTask('builddeps', 'build static dependencies for mobile project base on freemarker', function() {
+        var jsContent = grunt.file.read(PATH_TMP + APP_NAME + '.json'),
+            cssContent = grunt.file.read(PATH_TMP + APP_NAME + 'css.json');
+
+        grunt.file.write(FILE_STATIC, '<#assign JS_FILE=' + jsContent + ' CSS_FILE=' + cssContent + '>');
+    });
+
+    grunt.registerTask('default', ['tree','uglify', 'builddeps']);
+
+});
 ```
+
+```js
 // Gruntfile.js
 
 var STATIC_PATH = 'static/',
