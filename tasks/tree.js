@@ -9,6 +9,7 @@
 'use strict';
 
 var path = require('path'),
+    url = require('url'),
     fs = require('fs'),
     crypto = require('crypto');
 
@@ -161,7 +162,8 @@ module.exports = function(grunt) {
                     } else {
                         extFileName = getFileName(filename);
                     }
-                    tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
+                    tree[extFileName] = options.cwd + "/" + subdir + "/" + getMd5Name(abspath, filename, options.md5).replace(/\/+$/g, "/");
+                    tree[extFileName] = tree[extFileName].replace(/^\/+/, "");
                 }
             }
 
@@ -170,7 +172,7 @@ module.exports = function(grunt) {
                 tree = parseToTree(tree, options.md5);
             }
 
-            grunt.file.write(f.dest, JSON.stringify(tree));
+            grunt.file.write(f.dest, JSON.stringify(tree, null, 2));
             grunt.log.writeln('File "' + f.dest + '" created.');
         });
     });
