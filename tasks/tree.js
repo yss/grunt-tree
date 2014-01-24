@@ -93,6 +93,7 @@ module.exports = function(grunt) {
     grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
             recurse: true,
+            // exclude: [],
             // type: [],
             ext: { // can be covered
                 // level: 0,
@@ -101,7 +102,7 @@ module.exports = function(grunt) {
             md5: false,
             cwd: '', // relative to the src directory
             format: false
-        }), typeReg;
+        }), typeReg, exclRegName, exclRegDir;
 
         if (!options.ext.hyphen) {
             options.ext.hyphen = '-';
@@ -116,6 +117,19 @@ module.exports = function(grunt) {
             typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
         } else {
             typeReg = false;
+        }
+		
+        if (grunt.util.kindOf(options.exclude) === 'array') {
+            var i=options.exclude.length;
+            for(; i--;){
+                // Loop and remove all trailing fordslashes.
+                options.exclude[i] = options.exclude[i].replace(/\/+$/, ""); 
+            }
+            // New regex objects for testing directory paths and filenames. Added exclude : [path/, ...] feature into options.
+            exclRegName = new RegExp('^'+options.exclude.join('|')+'$');
+            exclRegDir  = new RegExp('^('+options.exclude.join('|')+')'); 
+        } else {
+            exclRegName = false;
         }
 
         this.files.forEach(function(f) {
@@ -156,6 +170,12 @@ module.exports = function(grunt) {
                     // not the given type
                     if (typeReg && !typeReg.test(filename)) {
                         return;
+                    }
+                    // an excluded path
+                    if (exclRegName && 
+                       ( exclRegName.test(subdir+'/'+filename) ||
+                         exclRegDir.test(subdir) )) {
+                         return;
                     }
                     if (options.format) {
                         extFileName = getExtFileName(subdir, options.ext, filename);
