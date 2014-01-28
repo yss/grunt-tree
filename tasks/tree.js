@@ -19,7 +19,7 @@ var path = require('path'),
  * @param {Number|Boolean} md5
  * @return {Object}
  */
-function parseToTree(obj, md5) {
+function parseToTree(obj, md5, uncpath) {
     var key, i, arr, len, tmp, fileArr,
         tree = {};
     for (key in obj) {
@@ -43,7 +43,13 @@ function parseToTree(obj, md5) {
             fileArr.pop();
         }
         // get the origin value
-        tmp[fileArr.join('.')] = obj[key];
+        if (uncpath) {
+            // path format is native to system
+            tmp[fileArr.join('.')] = obj[key];
+        } else {
+            // path URL format
+            tmp[fileArr.join('.')] = obj[key].replace(/(\\)+/g, '/'); 
+        }
     }
 
     return tree;
@@ -92,6 +98,7 @@ function getMd5Name(abspath, filename, md5) {
 module.exports = function(grunt) {
     grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
+            prettify: false,
             recurse: true,
             // exclude: [],
             // type: [],
@@ -101,6 +108,7 @@ module.exports = function(grunt) {
             },
             md5: false,
             cwd: '', // relative to the src directory
+            uncpath: false,
             format: false
         }), typeReg, exclRegName, exclRegDir;
 
@@ -133,7 +141,7 @@ module.exports = function(grunt) {
         }
 
         this.files.forEach(function(f) {
-            var tree = {};
+            var tree = {}, json='';
             f.src.filter(function(filepath) {
                 if (!grunt.file.exists(filepath)) {
                     grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -182,17 +190,21 @@ module.exports = function(grunt) {
                     } else {
                         extFileName = getFileName(filename);
                     }
-                    tree[extFileName] = options.cwd + "/" + subdir + "/" + getMd5Name(abspath, filename, options.md5).replace(/\/+$/g, "/");
-                    tree[extFileName] = tree[extFileName].replace(/^\/+/, "");
+                    tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
                 }
             }
 
 
             if (!options.format) {
-                tree = parseToTree(tree, options.md5);
+                tree = parseToTree(tree, options.md5, options.uncpath);
+            }
+            if (options.prettify) {
+                json = JSON.stringify(tree, null, 2);
+            } else {
+                json = JSON.stringify(tree);
             }
 
-            grunt.file.write(f.dest, JSON.stringify(tree, null, 2));
+            grunt.file.write(f.dest, json);
             grunt.log.writeln('File "' + f.dest + '" created.');
         });
     });
