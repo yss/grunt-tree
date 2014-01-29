@@ -188,7 +188,7 @@ module.exports = function(grunt) {
                     if (options.format) {
                         extFileName = getExtFileName(subdir, options.ext, filename);
                     } else {
-                        extFileName = getFileName(filename);
+                        extFileName = getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
                     }
                     tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
                 }
