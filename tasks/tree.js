@@ -9,6 +9,7 @@
 'use strict';
 
 var path = require('path'),
+    url = require('url'),
     fs = require('fs'),
     crypto = require('crypto');
 
@@ -18,7 +19,7 @@ var path = require('path'),
  * @param {Number|Boolean} md5
  * @return {Object}
  */
-function parseToTree(obj, md5) {
+function parseToTree(obj, md5, uncpath) {
     var key, i, arr, len, tmp, fileArr,
         tree = {};
     for (key in obj) {
@@ -42,7 +43,13 @@ function parseToTree(obj, md5) {
             fileArr.pop();
         }
         // get the origin value
-        tmp[fileArr.join('.')] = obj[key];
+        if (uncpath) {
+            // path format is native to system
+            tmp[fileArr.join('.')] = obj[key];
+        } else {
+            // path URL format
+            tmp[fileArr.join('.')] = obj[key].replace(/(\\)+/g, '/'); 
+        }
     }
 
     return tree;
@@ -91,7 +98,9 @@ function getMd5Name(abspath, filename, md5) {
 module.exports = function(grunt) {
     grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
+            prettify: false,
             recurse: true,
+            // exclude: [],
             // type: [],
             ext: { // can be covered
                 // level: 0,
@@ -99,8 +108,9 @@ module.exports = function(grunt) {
             },
             md5: false,
             cwd: '', // relative to the src directory
+            uncpath: false,
             format: false
-        }), typeReg;
+        }), typeReg, exclRegName, exclRegDir;
 
         if (!options.ext.hyphen) {
             options.ext.hyphen = '-';
@@ -116,9 +126,22 @@ module.exports = function(grunt) {
         } else {
             typeReg = false;
         }
+		
+        if (grunt.util.kindOf(options.exclude) === 'array') {
+            var i=options.exclude.length;
+            for(; i--;){
+                // Loop and remove all trailing fordslashes.
+                options.exclude[i] = options.exclude[i].replace(/\/+$/, ""); 
+            }
+            // New regex objects for testing directory paths and filenames. Added exclude : [path/, ...] feature into options.
+            exclRegName = new RegExp('^'+options.exclude.join('|')+'$');
+            exclRegDir  = new RegExp('^('+options.exclude.join('|')+')'); 
+        } else {
+            exclRegName = false;
+        }
 
         this.files.forEach(function(f) {
-            var tree = {};
+            var tree = {}, json='';
             f.src.filter(function(filepath) {
                 if (!grunt.file.exists(filepath)) {
                     grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -156,10 +179,16 @@ module.exports = function(grunt) {
                     if (typeReg && !typeReg.test(filename)) {
                         return;
                     }
+                    // an excluded path
+                    if (exclRegName && 
+                       ( exclRegName.test(subdir+'/'+filename) ||
+                         exclRegDir.test(subdir) )) {
+                         return;
+                    }
                     if (options.format) {
                         extFileName = getExtFileName(subdir, options.ext, filename);
                     } else {
-                        extFileName = getFileName(filename);
+                        extFileName = getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
                     }
                     tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
                 }
@@ -167,10 +196,15 @@ module.exports = function(grunt) {
 
 
             if (!options.format) {
-                tree = parseToTree(tree, options.md5);
+                tree = parseToTree(tree, options.md5, options.uncpath);
+            }
+            if (options.prettify) {
+                json = JSON.stringify(tree, null, 2);
+            } else {
+                json = JSON.stringify(tree);
             }
 
-            grunt.file.write(f.dest, JSON.stringify(tree));
+            grunt.file.write(f.dest, json);
             grunt.log.writeln('File "' + f.dest + '" created.');
         });
     });
