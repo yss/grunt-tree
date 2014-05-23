@@ -131,7 +131,11 @@ module.exports = function(grunt) {
             var i=options.exclude.length;
             for(; i--;){
                 // Loop and remove all trailing fordslashes.
-                options.exclude[i] = options.exclude[i].replace(/\/+$/, ""); 
+                options.exclude[i] = options.exclude[i].replace(/\/+$/g, ""); 
+                // Escape periods.
+                options.exclude[i] = options.exclude[i].replace(/\.([^*])/g, "\\.$1"); 
+                // Replace '*' with regex syntax (.*)
+                options.exclude[i] = options.exclude[i].replace(/([^.])\*/g, "$1.*"); 
             }
             // New regex objects for testing directory paths and filenames. Added exclude : [path/, ...] feature into options.
             exclRegName = new RegExp('^'+options.exclude.join('|')+'$');
@@ -181,8 +185,10 @@ module.exports = function(grunt) {
                     }
                     // an excluded path
                     if (exclRegName && 
-                       ( exclRegName.test(subdir+'/'+filename) ||
-                         exclRegDir.test(subdir) )) {
+                       ( exclRegName.test(subdir + '/' + filename) ||
+                         exclRegName.test(subdir + filename) ||
+                         exclRegDir.test(subdir) ||
+                         exclRegDir.test(subdir + '/'))) {
                          return;
                     }
                     if (options.format) {

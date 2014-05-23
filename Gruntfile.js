@@ -93,6 +93,17 @@ module.exports = function(grunt) {
                         dest: 'tmp/ext.json'
                     }
                 ]
+            },
+            exclude: {
+                options: {
+                    exclude: ['a.css']
+                },
+                files: [
+                    {
+                        src: [SRC_PATH],
+                        dest: 'tmp/exclude.json'
+                    }
+                ]
             }
         },
 
