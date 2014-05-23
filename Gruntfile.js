@@ -104,6 +104,17 @@ module.exports = function(grunt) {
                         dest: 'tmp/exclude.json'
                     }
                 ]
+            },
+            excludeAll: {
+                options: {
+                    exclude: ['*', '**']
+                },
+                files: [
+                    {
+                        src: [SRC_PATH],
+                        dest: 'tmp/excludeAll.json'
+                    }
+                ]
             }
         },
 

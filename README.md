@@ -51,6 +51,13 @@ grunt.initConfig({
         // format: | boolean default: false
         // type: array | default: []
         // recurse: boolean | default: true
+        // cwd: string | default: ""
+        // ext: object
+        //      ext.level: boolean or number [1-N] | default: false
+        //      ext.hyphen: string | default: "-"
+        // exclude: array | default: []
+        // uncpath: boolean | default: false
+        // prettify: boolean | default: false
     },
     your_target: {
       /** contents like this:
@@ -104,14 +111,42 @@ Relative to the src directory.
 
 #### options.ext
 Type: `Object`
-Default value: `{ level:0, hyphen: "-" }`
+Default value: `{ level:0, hyphen: "-" }`. Add in verison `0.4.4`.
 
-There is a new option for resolve the problem of the same name in file. 
-And the form option must be set to true.
+There is a new option for solve the problem of the same name in directory. 
+
+*Note:*
+
+*And the format option must be set to `true`*.
 
 The level option in options.ext means the subdirectory level.
 If file relative path is 'www/css/base.css' and level set to 1, then the result will be: `"www-base": "www/css/base.css"`.
 And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
+
+#### options.exclude
+Type: `Array`
+Default value: `[]`. Add in version: `0.4.5`.
+
+This is new option for filter needless files. How to use? GO <http://gruntjs.com/api/grunt.file#grunt.file.match>
+
+*Note:*
+
+*This is relative to the value of `options.cwd`*.
+
+
+#### options.uncpath
+Type: `Boolean`
+Default value: `false`. Add in version `0.4.5`.
+
+This is new option for some people run in the windows system and they need unix path rather than the default windows path.
+
+So, if your project run in unix system, you can turn on it.
+
+#### options.perttify
+Type: `Boolean`
+Default value: `false`. Add in version `0.4.5`.
+
+This is new option for output style, It is equivalent to `JSON.stringify(json, null, perttify ? 2 : 0)`.
 
 Anyway, see the examples.
 
@@ -342,8 +377,10 @@ module.exports = function(grunt) {
 
 ### Test
 ```shell
+npm run-script test
+
 # Once you run the follow command in console, you should run `npm install` before.
-grunt test
+# grunt test
 ```
 
 ## Release History
@@ -352,3 +389,5 @@ grunt test
 2. Add nodeunit test case. [2013/04/12] => for 0.4.2
 3. Add `ext` option for avoid the same name of key. [2013/06/03] => for 0.4.3
 4. Add `cwd` option for flexible configuration.  [2013/07/23] => for 0.4.4
+5. Add `exclude` option for filter useless file. And `uncpath`, `prettify` options. [2014/03/19] => for 0.4.5. 
+6. Use `grunt.file.match` for `exclude` method. [2014/05/19] => for 0.4.6.

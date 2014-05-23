@@ -8,23 +8,31 @@
 
 'use strict';
 
-var path = require('path'),
-    url = require('url'),
-    fs = require('fs'),
-    crypto = require('crypto');
+var Path = require('path'),
+    FS = require('fs'),
+    Crypto = require('crypto');
+
+function getUNCPath(file, isUNCPath) {
+    if (isUNCPath && Path.sep !== '/') {
+        return file.replace(new RegExp(Path.sep, 'g'), '/');
+    } else {
+        return file;
+    }
+}
 
 /**
  * parse a path object to a tree object
  * @param {Object} obj
  * @param {Number|Boolean} md5
+ * @param {Boolean} isUNCPath
  * @return {Object}
  */
-function parseToTree(obj, md5, uncpath) {
+function parseToTree(obj, md5, isUNCPath) {
     var key, i, arr, len, tmp, fileArr,
         tree = {};
     for (key in obj) {
         tmp = tree;
-        arr = obj[key].split(path.sep);
+        arr = obj[key].split(Path.sep);
 
         for (i = 0, len = arr.length - 1; i < len; i++) {
             if (!tmp[arr[i]]) {
@@ -43,13 +51,7 @@ function parseToTree(obj, md5, uncpath) {
             fileArr.pop();
         }
         // get the origin value
-        if (uncpath) {
-            // path format is native to system
-            tmp[fileArr.join('.')] = obj[key];
-        } else {
-            // path URL format
-            tmp[fileArr.join('.')] = obj[key].replace(/(\\)+/g, '/'); 
-        }
+        tmp[fileArr.join('.')] = getUNCPath(obj[key], isUNCPath);
     }
 
     return tree;
@@ -71,7 +73,7 @@ function getExtFileName(subdir, ext, filename) {
     var prefix;
     filename = getFileName(filename);
     if (ext.level > 0 && subdir) {
-        prefix = subdir.split('/')[ext.level - 1];
+        prefix = subdir.split(Path.sep)[ext.level - 1];
         if (prefix) {
             filename = prefix + ext.hyphen + filename;
         }
@@ -82,14 +84,14 @@ function getExtFileName(subdir, ext, filename) {
 // get md5 version of file
 function getMd5Version(str, encoding, len) {
     str = str || Math.random().toString();
-    str = crypto.createHash('md5').update(str).digest(encoding || 'hex');
+    str = Crypto.createHash('md5').update(str).digest(encoding || 'hex');
     return len ? str.slice(0, len) : str;
 }
 
 function getMd5Name(abspath, filename, md5) {
     if (md5) {
         var len = typeof md5 === 'number' ? md5 : 0,
-            version = getMd5Version(fs.readFileSync(abspath), '', len);
+            version = getMd5Version(FS.readFileSync(abspath), '', len);
         return getFileName(filename, version);
     }
     return filename;
@@ -110,7 +112,7 @@ module.exports = function(grunt) {
             cwd: '', // relative to the src directory
             uncpath: false,
             format: false
-        }), typeReg, exclRegName, exclRegDir;
+        }), typeReg;
 
         if (!options.ext.hyphen) {
             options.ext.hyphen = '-';
@@ -127,25 +129,8 @@ module.exports = function(grunt) {
             typeReg = false;
         }
 		
-        if (grunt.util.kindOf(options.exclude) === 'array') {
-            var i=options.exclude.length;
-            for(; i--;){
-                // Loop and remove all trailing fordslashes.
-                options.exclude[i] = options.exclude[i].replace(/\/+$/g, ""); 
-                // Escape periods.
-                options.exclude[i] = options.exclude[i].replace(/\.([^*])/g, "\\.$1"); 
-                // Replace '*' with regex syntax (.*)
-                options.exclude[i] = options.exclude[i].replace(/([^.])\*/g, "$1.*"); 
-            }
-            // New regex objects for testing directory paths and filenames. Added exclude : [path/, ...] feature into options.
-            exclRegName = new RegExp('^'+options.exclude.join('|')+'$');
-            exclRegDir  = new RegExp('^('+options.exclude.join('|')+')'); 
-        } else {
-            exclRegName = false;
-        }
-
         this.files.forEach(function(f) {
-            var tree = {}, json='';
+            var tree = {};
             f.src.filter(function(filepath) {
                 if (!grunt.file.exists(filepath)) {
                     grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -155,16 +140,16 @@ module.exports = function(grunt) {
                 }
             }).forEach(function(filepath) {
                 if (options.cwd) {
-                    filepath = path.join(filepath, options.cwd);
+                    filepath = Path.join(filepath, options.cwd);
                 }
                 if (options.recurse) {
                     grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
                         toTree(abspath, subdir, filename);
                     });
                 } else {
-                    var files = fs.readdirSync(filepath);
+                    var files = FS.readdirSync(filepath);
                     files.forEach(function(filename) {
-                        toTree(path.join(filepath, filename), './', filename);
+                        toTree(Path.join(filepath, filename), './', filename);
                     });
                 }
             });
@@ -183,20 +168,17 @@ module.exports = function(grunt) {
                     if (typeReg && !typeReg.test(filename)) {
                         return;
                     }
-                    // an excluded path
-                    if (exclRegName && 
-                       ( exclRegName.test(subdir + '/' + filename) ||
-                         exclRegName.test(subdir + filename) ||
-                         exclRegDir.test(subdir) ||
-                         exclRegDir.test(subdir + '/'))) {
-                         return;
+                    if (options.exclude) {
+                        if (grunt.file.match(options.exclude, getUNCPath(Path.join(subdir, filename))).length) {
+                            return;
+                        }
                     }
                     if (options.format) {
                         extFileName = getExtFileName(subdir, options.ext, filename);
                     } else {
                         extFileName = getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
                     }
-                    tree[extFileName] = path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
+                    tree[extFileName] = Path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
                 }
             }
 
@@ -204,13 +186,9 @@ module.exports = function(grunt) {
             if (!options.format) {
                 tree = parseToTree(tree, options.md5, options.uncpath);
             }
-            if (options.prettify) {
-                json = JSON.stringify(tree, null, 2);
-            } else {
-                json = JSON.stringify(tree);
-            }
 
-            grunt.file.write(f.dest, json);
+            grunt.file.write(f.dest, JSON.stringify(tree, null, options.prettify ? 2 : 0));
+
             grunt.log.writeln('File "' + f.dest + '" created.');
         });
     });
