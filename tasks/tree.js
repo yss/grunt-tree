@@ -169,7 +169,8 @@ module.exports = function(grunt) {
                         return;
                     }
                     if (options.exclude) {
-                        if (grunt.file.match(options.exclude, getUNCPath(Path.join(subdir, filename))).length) {
+                        if (grunt.file.match(options.exclude,
+                            getUNCPath(Path.join(subdir, filename), options.uncpath)).length) {
                             return;
                         }
                     }
