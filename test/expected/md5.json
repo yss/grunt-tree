@@ -1,7 +1,6 @@
 {
     "a": "a.e8dcfa25.css",
     "c": "c.a8e91771",
-    "js": {
-        "b": "js/b.59efd297.js"
-    }
+    "js/b.js": "js/b.59efd297.js",
+    "js/c/c/a.css": "js/c/c/a.d41d8cd9.css"
 }

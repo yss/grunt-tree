@@ -49,15 +49,6 @@ exports.tree = {
         test.deepEqual(actual, expected, 'Not equal at noOptions method.');
         test.done();
     },
-    noRecurse: function(test) {
-        test.expect(1);
-
-        var actual = grunt.file.readJSON('tmp/noRecurse.json'),
-            expected = grunt.file.readJSON(expectedDir + 'noRecurse.json');
-
-        test.deepEqual(actual, expected, 'Not equal at noRecurse method.');
-        test.done();
-    },
     md5: function(test) {
         test.expect(1);
 
@@ -67,29 +58,11 @@ exports.tree = {
         test.deepEqual(actual, expected, 'Not equal at md5 method.');
         test.done();
     },
-    format: function(test) {
-        test.expect(1);
-
-        var actual = grunt.file.readJSON('tmp/format.json'),
-            expected = grunt.file.readJSON(expectedDir + 'format.json');
-
-        test.deepEqual(actual, expected, 'Not equal at format method.');
-        test.done();
-    },
     type: function(test) {
         test.expect(1);
 
         var actual = grunt.file.readJSON('tmp/type.json'),
             expected = grunt.file.readJSON(expectedDir + 'type.json');
-
-        test.deepEqual(actual, expected, 'Not equal at type method.');
-        test.done();
-    },
-    ext: function(test) {
-        test.expect(1);
-
-        var actual = grunt.file.readJSON('tmp/ext.json'),
-            expected = grunt.file.readJSON(expectedDir + 'ext.json');
 
         test.deepEqual(actual, expected, 'Not equal at type method.');
         test.done();

@@ -1,1 +1,5 @@
-{"c":"c","js":{"b":"js/b.js"}}
+{
+    "c":"c",
+    "js/b.js": "js/b.js",
+    "js/c/c/a.css": "js/c/c/a.css"
+}

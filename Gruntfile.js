@@ -36,17 +36,6 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            noRecurse: {
-                options: {
-                    recurse: false
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/noRecurse.json'
-                    }
-                ]
-            },
             md5: {
                 options: {
                     md5: 8
@@ -58,17 +47,6 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            format: {
-                options: {
-                    format: true
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/format.json'
-                    }
-                ]
-            },
             type: {
                 options: {
                     type: ['css', 'js']
@@ -77,20 +55,6 @@ module.exports = function(grunt) {
                     {
                         src: [SRC_PATH],
                         dest: 'tmp/type.json'
-                    }
-                ]
-            },
-            ext: {
-                options: {
-                    format: true,
-                    ext: {
-                        level: 1
-                    }
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/ext.json'
                     }
                 ]
             },
