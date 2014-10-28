@@ -14,7 +14,7 @@ var Path = require('path'),
 
 function getUNCPath(file, isUNCPath) {
     if (isUNCPath && Path.sep !== '/') {
-        return file.replace(new RegExp(Path.sep, 'g'), '/');
+        return file.replace(new RegExp('\\' + Path.sep, 'g'), '/');
     } else {
         return file;
     }
