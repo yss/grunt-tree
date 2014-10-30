@@ -8,7 +8,7 @@
 
 'use strict';
 
-var SRC_PATH = 'test/tree/';
+var BASE = 'test/tree/';
 
 module.exports = function(grunt) {
 
@@ -29,56 +29,22 @@ module.exports = function(grunt) {
         // Configuration to be run (and then tested).
         tree: {
             noOptions: {
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/noOptions.json'
-                    }
-                ]
-            },
-            noRecurse: {
-                options: {
-                    recurse: false
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/noRecurse.json'
-                    }
-                ]
+                src: [BASE + '**'],
+                dest: 'tmp/noOptions.json'
             },
             md5: {
                 options: {
                     md5: 8
                 },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/md5.json'
-                    }
-                ]
+                src: [BASE + '**'],
+                dest: 'tmp/md5.json'
             },
             format: {
                 options: {
                     format: true
                 },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/format.json'
-                    }
-                ]
-            },
-            type: {
-                options: {
-                    type: ['css', 'js']
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/type.json'
-                    }
-                ]
+                src: [BASE + '**'],
+                dest: 'tmp/format.json'
             },
             ext: {
                 options: {
@@ -87,32 +53,31 @@ module.exports = function(grunt) {
                         level: 1
                     }
                 },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/ext.json'
-                    }
-                ]
+                src: [BASE + '**'],
+                dest: 'tmp/ext.json'
             },
             exclude: {
-                options: {
-                    exclude: ['a.css']
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/exclude.json'
-                    }
-                ]
+                src: [
+                    BASE + '**', 
+                    '!' + BASE + 'c'
+                ],
+                dest: 'tmp/exclude.json'
             },
-            excludeAll: {
-                options: {
-                    exclude: ['*', '**']
+            base: {
+                options : {
+                    base: BASE
                 },
+                src: [BASE + '**'],
+                dest: 'tmp/base.json'
+            },
+            multiple: {
                 files: [
                     {
-                        src: [SRC_PATH],
-                        dest: 'tmp/excludeAll.json'
+                        src: [BASE + '**', '!' + BASE + 'c'],
+                        dest: 'tmp/multiple1.json'
+                    },{
+                        src: [BASE + '**', '!' + BASE + 'a.css'],
+                        dest: 'tmp/multiple2.json'
                     }
                 ]
             }
@@ -140,5 +105,4 @@ module.exports = function(grunt) {
 
     // By default, lint and run all tests.
     // grunt.registerTask('default', ['jshint', 'test']);
-
 };

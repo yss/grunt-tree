@@ -1,7 +1,11 @@
 {
-    "a": "a.97224400.css",
-    "c": "c.402c9d84",
-    "js": {
-        "b": "js/b.69e71580.js"
+  "test": {
+    "tree": {
+      "a": "test/tree/a.97224400.css",
+      "c": "test/tree/c.402c9d84",
+      "js": {
+        "b": "test/tree/js/b.69e71580.js"
+      }
     }
+  }
 }

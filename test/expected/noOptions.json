@@ -1,7 +1,11 @@
 {
-    "a": "a.css",
-    "c": "c",
-    "js": {
-        "b": "js/b.js"
+  "test": {
+    "tree": {
+      "a": "test/tree/a.css",
+      "c": "test/tree/c",
+      "js": {
+        "b": "test/tree/js/b.js"
+      }
     }
+  }
 }

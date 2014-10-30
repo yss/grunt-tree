@@ -23,17 +23,17 @@ var grunt = require('grunt');
     test.ifError(value)
 */
 
-var expectedDir, platform = os.platform();
+var expectedDir, expectedWinDir, platform = os.platform();
+
+expectedDir = "test/expected/"; 
 
 // Windows render MD5 hashes differently.
-// UNC paths change when format is used, so lets
-// create corresponding, expected results for windows.
 if (platform === "win32" || platform === "win63") {
-    expectedDir = "test/expected/win/"; 
-
+    expectedWinDir = "test/expected/win/"; 
 } else {
-    expectedDir = "test/expected/"; 
+    expectedWinDir = expectedDir;
 }
+
 
 exports.tree = {
     setUp: function(done) {
@@ -49,20 +49,11 @@ exports.tree = {
         test.deepEqual(actual, expected, 'Not equal at noOptions method.');
         test.done();
     },
-    noRecurse: function(test) {
-        test.expect(1);
-
-        var actual = grunt.file.readJSON('tmp/noRecurse.json'),
-            expected = grunt.file.readJSON(expectedDir + 'noRecurse.json');
-
-        test.deepEqual(actual, expected, 'Not equal at noRecurse method.');
-        test.done();
-    },
     md5: function(test) {
         test.expect(1);
 
         var actual = grunt.file.readJSON('tmp/md5.json'),
-            expected = grunt.file.readJSON(expectedDir + 'md5.json');
+            expected = grunt.file.readJSON(expectedWinDir + 'md5.json');
 
         test.deepEqual(actual, expected, 'Not equal at md5 method.');
         test.done();
@@ -74,15 +65,6 @@ exports.tree = {
             expected = grunt.file.readJSON(expectedDir + 'format.json');
 
         test.deepEqual(actual, expected, 'Not equal at format method.');
-        test.done();
-    },
-    type: function(test) {
-        test.expect(1);
-
-        var actual = grunt.file.readJSON('tmp/type.json'),
-            expected = grunt.file.readJSON(expectedDir + 'type.json');
-
-        test.deepEqual(actual, expected, 'Not equal at type method.');
         test.done();
     },
     ext: function(test) {
@@ -103,14 +85,25 @@ exports.tree = {
         test.deepEqual(actual, expected, 'Not equal at exclude method.');
         test.done();
     },
-
-    excludeAll: function(test) {
+    base: function(test) {
         test.expect(1);
 
-        var actual = grunt.file.readJSON('tmp/excludeAll.json'),
-            expected = grunt.file.readJSON(expectedDir + 'excludeAll.json');
+        var actual = grunt.file.readJSON('tmp/base.json'),
+            expected = grunt.file.readJSON(expectedDir + 'base.json');
 
-        test.deepEqual(actual, expected, 'Not equal at excludeAll method.');
+        test.deepEqual(actual, expected, 'Not equal at exclude method.');
+        test.done();
+    },
+    multiple: function(test) {
+        test.expect(2);
+
+        var actual1 = grunt.file.readJSON('tmp/multiple1.json'),
+            expected1 = grunt.file.readJSON(expectedDir + 'multiple1.json'),
+            actual2 = grunt.file.readJSON('tmp/multiple2.json'),
+            expected2 = grunt.file.readJSON(expectedDir + 'multiple2.json');
+
+        test.deepEqual(actual1, expected1, 'Not equal at exclude method.');
+        test.deepEqual(actual2, expected2, 'Not equal at exclude method.');
         test.done();
     }
 };
