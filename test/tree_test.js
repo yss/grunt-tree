@@ -84,5 +84,26 @@ exports.tree = {
 
         test.deepEqual(actual, expected, 'Not equal at exclude method.');
         test.done();
+    },
+    base: function(test) {
+        test.expect(1);
+
+        var actual = grunt.file.readJSON('tmp/base.json'),
+            expected = grunt.file.readJSON(expectedDir + 'base.json');
+
+        test.deepEqual(actual, expected, 'Not equal at exclude method.');
+        test.done();
+    },
+    multiple: function(test) {
+        test.expect(2);
+
+        var actual1 = grunt.file.readJSON('tmp/multiple1.json'),
+            expected1 = grunt.file.readJSON(expectedDir + 'multiple1.json'),
+            actual2 = grunt.file.readJSON('tmp/multiple2.json'),
+            expected2 = grunt.file.readJSON(expectedDir + 'multiple2.json');
+
+        test.deepEqual(actual1, expected1, 'Not equal at exclude method.');
+        test.deepEqual(actual2, expected2, 'Not equal at exclude method.');
+        test.done();
     }
 };

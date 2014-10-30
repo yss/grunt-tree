@@ -8,7 +8,7 @@
 
 'use strict';
 
-var SRC_PATH = 'test/tree';
+var BASE = 'test/tree/';
 
 module.exports = function(grunt) {
 
@@ -29,27 +29,21 @@ module.exports = function(grunt) {
         // Configuration to be run (and then tested).
         tree: {
             noOptions: {
-                expand: true,
-                cwd: SRC_PATH,
-                src: ['**'],
+                src: [BASE + '**'],
                 dest: 'tmp/noOptions.json'
             },
             md5: {
                 options: {
                     md5: 8
                 },
-                expand: true,
-                cwd: SRC_PATH,
-                src: ['**'],
+                src: [BASE + '**'],
                 dest: 'tmp/md5.json'
             },
             format: {
                 options: {
                     format: true
                 },
-                expand: true,
-                cwd: SRC_PATH,
-                src: ['**'],
+                src: [BASE + '**'],
                 dest: 'tmp/format.json'
             },
             ext: {
@@ -59,19 +53,33 @@ module.exports = function(grunt) {
                         level: 1
                     }
                 },
-                expand: true,
-                cwd: SRC_PATH,
-                src: ['**'],
+                src: [BASE + '**'],
                 dest: 'tmp/ext.json'
             },
             exclude: {
-                expand: true,
-                cwd: SRC_PATH,
                 src: [
-                    '**', 
-                    '!a.css'
+                    BASE + '**', 
+                    '!' + BASE + 'c'
                 ],
                 dest: 'tmp/exclude.json'
+            },
+            base: {
+                options : {
+                    base: BASE
+                },
+                src: [BASE + '**'],
+                dest: 'tmp/base.json'
+            },
+            multiple: {
+                files: [
+                    {
+                        src: [BASE + '**', '!' + BASE + 'c'],
+                        dest: 'tmp/multiple1.json'
+                    },{
+                        src: [BASE + '**', '!' + BASE + 'a.css'],
+                        dest: 'tmp/multiple2.json'
+                    }
+                ]
             }
         },
 

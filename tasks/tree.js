@@ -21,9 +21,10 @@ module.exports = function(grunt) {
                 // hyphen: '-'
             },
             md5: false,
+            base: '',
             uncpath: true,
             format: false
-        }), tree = {};
+        });
 
         if (!options.ext.hyphen) {
             options.ext.hyphen = '-';
@@ -36,10 +37,10 @@ module.exports = function(grunt) {
         
         // Each set of files.
         this.files.forEach(function(f) {
-            var files = f;
+            var files = f, tree = {};
 
             f.src.forEach(function(path) {
-                var key, cwd, filename, subdir, subdirReg, value;
+                var key, filename, subdir, subdirReg, value;
                 
                 // File exists.
                 if (!grunt.file.exists(path)) {
@@ -54,13 +55,13 @@ module.exports = function(grunt) {
                     return false;
                 } 
 
-                cwd = files.orig.cwd;
                 filename = path.split('/').pop();
 
-                // Remove cwd and filename from path to get subdir
-                subdirReg = new RegExp('(^' + cwd + '\/*)|(' + filename + '$)', 'g');
-                subdir = (cwd)? path.replace(subdirReg, '') : '';
-                
+                // Remove base and filename from path to get subdir.
+                var base = (options.base)? '(^' + escapeRegExp(options.base) + '\/*)|' : '';
+                subdirReg = new RegExp(base + '(' + escapeRegExp(filename) + '$)', 'g');
+                subdir = path.replace(subdirReg, '');
+
                 if (options.format) {
                     key = getExtFileName(subdir, options.ext, filename);
                 } else {
@@ -72,16 +73,16 @@ module.exports = function(grunt) {
                 value = getUNCPath(value, options.uncpath);
                 tree[key] = value;
             });
-        });
-        
-        if (!options.format) {
-            tree = parseToTree(tree, options.md5);
-        }
 
-        // Write tree to file.
-        var dest = this.files[0].orig.dest;
-        grunt.file.write(dest, JSON.stringify(tree, null, options.prettify ? 2 : 0));
-        grunt.log.writeln('File "' + dest + '" created.');
+            if (!options.format) {
+                tree = parseToTree(tree, options.md5);
+            }
+
+            // Write tree to file.
+            var dest = files.orig.dest;
+            grunt.file.write(dest, JSON.stringify(tree, null, options.prettify ? 2 : 0));
+            grunt.log.writeln('File "' + dest + '" created.');
+        });
     });
 
     // Parse a path value to a tree object.
@@ -166,5 +167,9 @@ module.exports = function(grunt) {
         str = str || Math.random().toString();
         str = Crypto.createHash('md5').update(str).digest(encoding || 'hex');
         return len ? str.slice(0, len) : str;
+    }
+
+    function escapeRegExp(str) {
+      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
 };

@@ -1,7 +1,5 @@
 {
-  "a": "a.css",
-  "c": "c",
-  "js-b": "js/b.js",
-  "y": "y",
-  "z": "z"
+  "test-a": "test/tree/a.css",
+  "test-c": "test/tree/c",
+  "test-b": "test/tree/js/b.js"
 }

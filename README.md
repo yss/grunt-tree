@@ -52,13 +52,12 @@ grunt.initConfig({
         // ext: object
         //      ext.level: boolean or number [1-N] | default: false
         //      ext.hyphen: string | default: "-"
+        // base: string | default: ""
         // uncpath: boolean | default: true
         // prettify: boolean | default: true
     },
     your_target: {
-        expand: true,
-        cwd: 'relativePath/',
-        src: ['**'],
+        src: ['relativePath/**'],
         dest: 'saveTheResult/'
     }
   }
@@ -96,6 +95,12 @@ There is a new option for solve the problem of the same name in directory.
 The level option in options.ext means the subdirectory level.
 If file relative path is 'www/css/base.css' and level set to 1, then the result will be: `"www-base": "www/css/base.css"`.
 And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
+
+#### options.base
+Type: `String`
+Default value: `''`.
+
+Tree's root directory. This does not effect `src` files.
 
 #### options.uncpath
 Type: `Boolean`
@@ -215,12 +220,11 @@ module.exports = function(grunt) {
         },
         tree: {
             options: {
+                base: APP_NAME,
                 format: true,
                 md5: 8
             },
             js: {
-                expand: true,
-                cwd: APP_NAME,
                 src: [PATH_SRC, '!js'],
                 dest: PATH_TMP + APP_NAME + '.json'
             }
@@ -253,27 +257,25 @@ module.exports = function(grunt) {
         tree: {
             js: {
                 options: {
+                    base: STATIC_PATH,
                     md5: 8,
                     format: true,
                     ext: {
                         level: 1
                     }
                 },
-                expand: true,
-                cwd: STATIC_PATH,
                 src: ['**', '!js'],
                 dest: BUILD_PATH + 'data/js.json'
             },
             css: {
                 options: {
+                    base: STATIC_PATH,
                     md5: 8,
                     format: true,
                     ext: {
                         level: 1
                     }
                 },
-                expand: true,
-                cwd: STATIC_PATH,
                 src: ['**', '!css'],
                 dest: BUILD_PATH + 'data/css.json'
             }
