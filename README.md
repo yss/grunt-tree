@@ -47,7 +47,8 @@ In your project's Gruntfile, add a section named `tree` to the data object passe
 grunt.initConfig({
   tree: {
     options: {
-        // md5: boolean or number [1-32] | default: false
+        // hash: string | default: false | like 'md5'
+        // hashLen: number | default: false
         // format: | boolean default: false
         // type: array | default: []
         // recurse: boolean | default: true
@@ -55,8 +56,7 @@ grunt.initConfig({
         // ext: object
         //      ext.level: boolean or number [1-N] | default: false
         //      ext.hyphen: string | default: "-"
-        // exclude: array | default: []
-        // uncpath: boolean | default: false
+        // isUNCPath: boolean | default: false
         // prettify: boolean | default: false
     },
     your_target: {
@@ -75,11 +75,23 @@ grunt.initConfig({
 
 ### Options
 
-#### options.md5
+#### ~~options.md5~~
 Type: `Boolean|Number`
-Default value: `false`
+Default value: `false`. Removed in version `0.4.8`, replaced by `options.hash`.
 
 Get the md5 value of the file and put in file name. If the value is number, then cut the full md5 value to the length.
+
+### options.hash
+Type: `String`
+Default value: `false`.
+
+Get the hash value of the file and insert before the postfix of file name. Value is the algorithm name, like md5.
+
+### options.hashLen
+Type: `Number`
+Default value: `false`
+
+Get the substring of hash value of file. `hashValue.substring(0, options.hashLen)`
 
 #### options.format
 Type: `Boolean`
@@ -123,9 +135,9 @@ The level option in options.ext means the subdirectory level.
 If file relative path is 'www/css/base.css' and level set to 1, then the result will be: `"www-base": "www/css/base.css"`.
 And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
 
-#### options.exclude
+#### ~~options.exclude~~
 Type: `Array`
-Default value: `[]`. Add in version: `0.4.5`.
+Default value: `[]`. Add in version: `0.4.5`. Removed in version: `0.4.8`.
 
 This is new option for filter needless files. How to use? GO <http://gruntjs.com/api/grunt.file#grunt.file.match>
 
@@ -134,17 +146,17 @@ This is new option for filter needless files. How to use? GO <http://gruntjs.com
 *This is relative to the value of `options.cwd`*.
 
 
-#### options.uncpath
+#### ~~options.uncpath~~ options.isUNCPath
 Type: `Boolean`
-Default value: `false`. Add in version `0.4.5`.
+Default value: `false`. Add in version `0.4.5`. Replace by `options.isUNCPath`
 
 This is new option for some people run in the windows system and they need unix path rather than the default windows path.
 
 So, if your project run in unix system, you can turn on it.
 
-#### options.perttify
+#### ~~options.perttify~~ options.prettify
 Type: `Boolean`
-Default value: `false`. Add in version `0.4.5`.
+Default value: `false`. Add in version `0.4.5`. Replace by `options.prettify`
 
 This is new option for output style, It is equivalent to `JSON.stringify(json, null, perttify ? 2 : 0)`.
 
@@ -390,4 +402,5 @@ npm run-script test
 3. Add `ext` option for avoid the same name of key. [2013/06/03] => for 0.4.3
 4. Add `cwd` option for flexible configuration.  [2013/07/23] => for 0.4.4
 5. Add `exclude` option for filter useless file. And `uncpath`, `prettify` options. [2014/03/19] => for 0.4.5. 
-6. Use `grunt.file.match` for `exclude` method. [2014/05/19] => for 0.4.6.
+6. Use `grunt.file.match` for `exclude` option. [2014/05/19] => for 0.4.6.
+7. New construct for tree.js. Remove `exclude` and `md5` options. Add `hash` and `hashLen` options.  Replace `uncpath` to `isUNCPath` and `perttify` to `prettify`.

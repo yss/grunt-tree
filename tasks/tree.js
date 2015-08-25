@@ -12,107 +12,172 @@ var Path = require('path'),
     FS = require('fs'),
     Crypto = require('crypto');
 
-function getUNCPath(file, isUNCPath) {
-    if (isUNCPath && Path.sep !== '/') {
-        return file.replace(new RegExp('\\' + Path.sep, 'g'), '/');
-    } else {
-        return file;
+// overrides the origin object
+function mix(o, s) {
+    for (var key in s) {
+        o[key] = s[key];
     }
 }
 
 /**
- * parse a path object to a tree object
- * @param {Object} obj
- * @param {Number|Boolean} md5
- * @param {Boolean} isUNCPath
- * @return {Object}
+ *
  */
-function parseToTree(obj, md5, isUNCPath) {
-    var key, i, arr, len, tmp, fileArr,
-        tree = {};
-    for (key in obj) {
-        tmp = tree;
-        arr = obj[key].split(Path.sep);
+function Tree(grunt, files, options) {
+    this.grunt = grunt;
+    this.files = files;
+    this.options = options;
+    this.init();
+}
 
-        for (i = 0, len = arr.length - 1; i < len; i++) {
-            if (!tmp[arr[i]]) {
-                tmp[arr[i]] = {};
+mix(Tree.prototype, {
+    // for windows user
+    getUNCPath: function(file) {
+        if (this.options.isUNCPath && Path.sep !== '/') {
+            return file.replace(new RegExp('\\' + Path.sep, 'g'), '/');
+        } else {
+            return file;
+        }
+    },
+
+    //
+    getFileName: function(abspath, filename) {
+        if (this.options.hash) {
+            var version = Crypto.createHash(this.options.hash).update(FS.readFileSync(abspath)).digest('hex');
+            if (this.options.hashLen) {
+                version = version.slice(0, this.options.hashLen);
             }
-            tmp = tmp[arr[i]];
+            return this.getFileNameWithVersion(filename, version);
+        }
+        return filename;
+    },
+
+    /**
+     * name.js => name.version.js
+     * name => name.version
+     */
+    getFileNameWithVersion: function(filename, version) {
+        filename = filename.split('.');
+        filename.splice(Math.max(filename.length - 1, 1), 0, version);
+        return filename.join('.');
+    },
+
+    // get the prefix with subdir
+    getKeyName: function (subdir, filename) {
+        var prefix;
+        filename = this.getFileName(filename);
+        if (this.options.ext.level > 0 && subdir) {
+            prefix = subdir.split(Path.sep)[this.options.ext.level - 1];
+            if (prefix) {
+                filename = prefix + this.options.ext.hyphen + filename;
+            }
+        }
+        return filename;
+    },
+
+    toTree: function(abspath, subdir, filename) {
+        var grunt = this.grunt,
+            options = this.options;
+        var extFileName;
+        // ensure subdir is not undefined
+        subdir = subdir || "";
+        // ignore hidden file
+        if (filename.indexOf('.') === 0) {
+            grunt.log.writeln('Ignore file: ' + filename);
+            return;
+        }
+        if (grunt.file.isFile(abspath)) {
+            // not the given type
+            if (this._typeReg && !this._typeReg.test(filename)) {
+                return;
+            }
+            if (options.format) {
+                extFileName = this.getKeyName(subdir, filename);
+            } else {
+                extFileName = this.getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
+            }
+            this._tree[extFileName] = Path.join(options.cwd, subdir, this.getFileName(abspath, filename));
+        }
+    },
+
+    /**
+     * parse a path object to a tree object
+     */
+    parseTreeWithNoFormat: function () {
+        var obj = this._tree;
+        var key, i, arr, len, tmp, fileArr,
+            tree = {};
+        for (key in obj) {
+            tmp = tree;
+            arr = obj[key].split(Path.sep);
+
+            for (i = 0, len = arr.length - 1; i < len; i++) {
+                if (!tmp[arr[i]]) {
+                    tmp[arr[i]] = {};
+                }
+                tmp = tmp[arr[i]];
+            }
+
+            // handle last one
+            fileArr = arr[i].split('.');
+            if (this.options.hash) {
+                fileArr.pop();
+            }
+            // if has postfix, remove it
+            if (fileArr.length > 1) {
+                fileArr.pop();
+            }
+            // get the origin value
+            tmp[fileArr.join('.')] = this.getUNCPath(obj[key]);
         }
 
-        // handle last one
-        fileArr = arr[i].split('.');
-        if (md5) {
-            fileArr.pop();
-        }
-        // if has postfix, remove it
-        if (fileArr.length > 1) {
-            fileArr.pop();
-        }
-        // get the origin value
-        tmp[fileArr.join('.')] = getUNCPath(obj[key], isUNCPath);
+        return tree;
+    },
+
+    init: function() {
+        var _this = this,
+            options = _this.options;
+        this._tree = {};
+        _this.files.forEach(function(filepath) {
+            if (options.cwd) {
+                filepath = Path.join(filepath, options.cwd);
+            }
+            if (options.recurse) {
+                _this.grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
+                    _this.toTree(abspath, subdir, filename);
+                });
+            } else {
+                var files = FS.readdirSync(filepath);
+                files.forEach(function(filename) {
+                    _this.toTree(Path.join(filepath, filename), '', filename);
+                });
+            }
+
+            if (!options.format) {
+                _this._tree = this.parseTreeWithNoFormat();
+            }
+
+            _this.grunt.file.write(filepath.dest, JSON.stringify(_this._tree, null, options.prettify ? 2 : 0));
+
+            _this.grunt.log.writeln('File "' + filepath.dest + '" created.');
+        });
     }
-
-    return tree;
-}
-
-// file with lost postfix
-function getFileName(filename, version) {
-    var pos = filename.lastIndexOf('.');
-    if (version) {
-        version = '.' + version;
-        return ~pos ? filename.substring(0, pos) + version + filename.slice(pos) : filename + version;
-    } else {
-        return ~pos ? filename.substring(0, pos) : filename;
-    }
-}
-
-// get the prefix with subdir
-function getExtFileName(subdir, ext, filename) {
-    var prefix;
-    filename = getFileName(filename);
-    if (ext.level > 0 && subdir) {
-        prefix = subdir.split(Path.sep)[ext.level - 1];
-        if (prefix) {
-            filename = prefix + ext.hyphen + filename;
-        }
-    }
-    return filename;
-}
-
-// get md5 version of file
-function getMd5Version(str, encoding, len) {
-    str = str || Math.random().toString();
-    str = Crypto.createHash('md5').update(str).digest(encoding || 'hex');
-    return len ? str.slice(0, len) : str;
-}
-
-function getMd5Name(abspath, filename, md5) {
-    if (md5) {
-        var len = typeof md5 === 'number' ? md5 : 0,
-            version = getMd5Version(FS.readFileSync(abspath), '', len);
-        return getFileName(filename, version);
-    }
-    return filename;
-}
+});
 
 module.exports = function(grunt) {
     grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
-            prettify: false,
+            // prettify: function(data){ return data },
             recurse: true,
-            // exclude: [],
             // type: [],
             ext: { // can be covered
                 // level: 0,
                 // hyphen: '-'
             },
-            md5: false,
+            //hash: 'md5:10',
             cwd: '', // relative to the src directory
-            uncpath: false,
+            isUNCPath: false,
             format: false
-        }), typeReg;
+        });
 
         if (!options.ext.hyphen) {
             options.ext.hyphen = '-';
@@ -124,74 +189,9 @@ module.exports = function(grunt) {
         }
 
         if (grunt.util.kindOf(options.type) === 'array') {
-            typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
-        } else {
-            typeReg = false;
+            options._typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
         }
-		
-        this.files.forEach(function(f) {
-            var tree = {};
-            f.src.filter(function(filepath) {
-                if (!grunt.file.exists(filepath)) {
-                    grunt.log.warn('Source file "' + filepath + '" not found.');
-                    return false;
-                } else {
-                    return true;
-                }
-            }).forEach(function(filepath) {
-                if (options.cwd) {
-                    filepath = Path.join(filepath, options.cwd);
-                }
-                if (options.recurse) {
-                    grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
-                        toTree(abspath, subdir, filename);
-                    });
-                } else {
-                    var files = FS.readdirSync(filepath);
-                    files.forEach(function(filename) {
-                        toTree(Path.join(filepath, filename), './', filename);
-                    });
-                }
-            });
 
-            function toTree(abspath, subdir, filename) {
-                var extFileName;
-                // ensure subdir is not undefined
-                subdir = subdir || "";
-                // ignore hidden file
-                if (filename.indexOf('.') === 0) {
-                    grunt.log.writeln('Ignore file: ' + filename);
-                    return;
-                }
-                if (grunt.file.isFile(abspath)) {
-                    // not the given type
-                    if (typeReg && !typeReg.test(filename)) {
-                        return;
-                    }
-                    if (options.exclude) {
-                        if (grunt.file.match(options.exclude,
-                            getUNCPath(Path.join(subdir, filename), options.uncpath)).length) {
-                            return;
-                        }
-                    }
-                    if (options.format) {
-                        extFileName = getExtFileName(subdir, options.ext, filename);
-                    } else {
-                        extFileName = getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
-                    }
-                    tree[extFileName] = Path.join(options.cwd, subdir, getMd5Name(abspath, filename, options.md5));
-                }
-            }
-
-
-            if (!options.format) {
-                tree = parseToTree(tree, options.md5, options.uncpath);
-            }
-
-            grunt.file.write(f.dest, JSON.stringify(tree, null, options.prettify ? 2 : 0));
-
-            grunt.log.writeln('File "' + f.dest + '" created.');
-        });
+        new Tree(grunt, this.files, options);
     });
-
 };

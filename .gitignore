@@ -5,3 +5,4 @@ tmp/
 *.swo
 *.swn
 *~
+.idea/
