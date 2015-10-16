@@ -196,7 +196,7 @@ grunt.initConfig({
     "c": "c"
 }
 
-// 2. change the options to: { md5 : 8 }, and result will be like:
+// 2. change the options to: { hash: 'md5', hashLen : 8 }, and result will be like:
 {
     "a": "a.e8dcfa25.css",
     "js": {
@@ -283,7 +283,8 @@ module.exports = function(grunt) {
         tree: {
             options: {
                 format: true,
-                md5: 8
+                hash: 'md5',
+                hashLen: 8
             },
             js: {
                 options: {
@@ -327,7 +328,8 @@ module.exports = function(grunt) {
             js: {
                 options: {
                     format: true,
-                    md5: 8,
+                    hash: 'md5',
+                    hashLen: 8,
                     type: ['js'],
                     ext: {
                         level: 1
@@ -343,7 +345,8 @@ module.exports = function(grunt) {
             css: {
                 options: {
                     format: true,
-                    md5: 8,
+                    hash: 'md5',
+                    hashLen: 8,
                     type: ['css'],
                     ext: {
                         level: 1
