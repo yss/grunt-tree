@@ -49,7 +49,8 @@ module.exports = function(grunt) {
             },
             md5: {
                 options: {
-                    md5: 8
+                    hash: 'md5',
+                    hashLen: 8
                 },
                 files: [
                     {
@@ -93,35 +94,35 @@ module.exports = function(grunt) {
                         dest: 'tmp/ext.json'
                     }
                 ]
-            },
-            exclude: {
-                options: {
-                    exclude: ['a.css']
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/exclude.json'
-                    }
-                ]
-            },
-            excludeAll: {
-                options: {
-                    exclude: ['*', '**']
-                },
-                files: [
-                    {
-                        src: [SRC_PATH],
-                        dest: 'tmp/excludeAll.json'
-                    }
-                ]
+            //},
+            //exclude: {
+            //    options: {
+            //        exclude: ['a.css']
+            //    },
+            //    files: [
+            //        {
+            //            src: [SRC_PATH],
+            //            dest: 'tmp/exclude.json'
+            //        }
+            //    ]
+            //},
+            //excludeAll: {
+            //    options: {
+            //        exclude: ['*', '**']
+            //    },
+            //    files: [
+            //        {
+            //            src: [SRC_PATH],
+            //            dest: 'tmp/excludeAll.json'
+            //        }
+            //    ]
             }
         },
 
         // Unit tests.
         nodeunit: {
-            tests: ['test/*_test.js'],
-        },
+            tests: ['test/*_test.js']
+        }
 
     });
 

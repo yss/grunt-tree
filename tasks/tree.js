@@ -64,7 +64,9 @@ mix(Tree.prototype, {
     // get the prefix with subdir
     getKeyName: function (subdir, filename) {
         var prefix;
-        filename = this.getFileName(filename);
+        var paths = filename.split('.');
+        paths.pop();
+        filename = paths.join('.') || filename;
         if (this.options.ext.level > 0 && subdir) {
             prefix = subdir.split(Path.sep)[this.options.ext.level - 1];
             if (prefix) {
@@ -87,14 +89,11 @@ mix(Tree.prototype, {
         }
         if (grunt.file.isFile(abspath)) {
             // not the given type
-            if (this._typeReg && !this._typeReg.test(filename)) {
+            if (options._typeReg && !options._typeReg.test(filename)) {
                 return;
             }
-            if (options.format) {
-                extFileName = this.getKeyName(subdir, filename);
-            } else {
-                extFileName = this.getFileName(subdir.replace(/[\\\/\.]+/g,'') + filename);
-            }
+            extFileName = this.getKeyName(subdir, filename);
+
             this._tree[extFileName] = Path.join(options.cwd, subdir, this.getFileName(abspath, filename));
         }
     },
@@ -136,29 +135,31 @@ mix(Tree.prototype, {
     init: function() {
         var _this = this,
             options = _this.options;
-        this._tree = {};
-        _this.files.forEach(function(filepath) {
-            if (options.cwd) {
-                filepath = Path.join(filepath, options.cwd);
-            }
-            if (options.recurse) {
-                _this.grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
-                    _this.toTree(abspath, subdir, filename);
-                });
-            } else {
-                var files = FS.readdirSync(filepath);
-                files.forEach(function(filename) {
-                    _this.toTree(Path.join(filepath, filename), '', filename);
-                });
-            }
+        _this.files.forEach(function(file) {
+            _this._tree = {};
+            file.src.forEach(function(filepath) {
+                if (options.cwd) {
+                    filepath = Path.join(filepath, options.cwd);
+                }
+                if (options.recurse) {
+                    _this.grunt.file.recurse(filepath, function(abspath, rootdir, subdir, filename) {
+                        _this.toTree(abspath, subdir, filename);
+                    });
+                } else {
+                    var files = FS.readdirSync(filepath);
+                    files.forEach(function(filename) {
+                        _this.toTree(Path.join(filepath, filename), '', filename);
+                    });
+                }
+            });
 
             if (!options.format) {
-                _this._tree = this.parseTreeWithNoFormat();
+                _this._tree = _this.parseTreeWithNoFormat();
             }
 
-            _this.grunt.file.write(filepath.dest, JSON.stringify(_this._tree, null, options.prettify ? 2 : 0));
+            _this.grunt.file.write(file.dest, JSON.stringify(_this._tree, null, options.prettify ? 2 : 0));
 
-            _this.grunt.log.writeln('File "' + filepath.dest + '" created.');
+            _this.grunt.log.writeln('File "' + file.dest + '" created.');
         });
     }
 });
@@ -173,7 +174,8 @@ module.exports = function(grunt) {
                 // level: 0,
                 // hyphen: '-'
             },
-            //hash: 'md5:10',
+            //hash: 'md5',
+            //hashLen: 8,
             cwd: '', // relative to the src directory
             isUNCPath: false,
             format: false

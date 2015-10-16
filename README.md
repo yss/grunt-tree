@@ -395,6 +395,10 @@ npm run-script test
 # grunt test
 ```
 
+## Last
+
+About the version. The first two version is the same with `grunt` first two version.
+
 ## Release History
 
 1. Compatibility fix for node 0.10.x. [2013/04/12] => for 0.4.1
@@ -404,3 +408,4 @@ npm run-script test
 5. Add `exclude` option for filter useless file. And `uncpath`, `prettify` options. [2014/03/19] => for 0.4.5. 
 6. Use `grunt.file.match` for `exclude` option. [2014/05/19] => for 0.4.6.
 7. New construct for tree.js. Remove `exclude` and `md5` options. Add `hash` and `hashLen` options.  Replace `uncpath` to `isUNCPath` and `perttify` to `prettify`.
+8. Fix for Fatal Error!!! => 0.4.9
