@@ -1,27 +1,6 @@
 # grunt-tree
 Parse a directory to a tree with json format.
 
-## Why I writen this plugin?
-I need build my static files with md5 version. I want to get this:
-``` js
-// js.json
-{
-    "base": "js/base.xxx.js",
-    "jquery": "js/jquery.xxx.js"
-}
-// or
-{
-    "www-base": "www/js/base.xxx.js",
-    "mobile-base": "mobile/js/base.xxx.js"
-}
-// css.json
-{
-    "base": "css/base.xxx.css"
-}
-```
-Then, I can get the real path via a function, no matter what the environment is development or production.
-
-> The best Grunt plugin ever.
 
 ## Getting Started
 This plugin requires Grunt `>=0.4.0`
