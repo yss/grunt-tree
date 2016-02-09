@@ -1,7 +1,7 @@
 {
   "name": "grunt-file-tree",
   "description": "Parse a directory to json object containing folder and file names.",
-  "version": "0.1",
+  "version": "0.0.1",
   "homepage": "https://github.com/honkskillet/grunt-file-tree",
   "author": {
     "name": "Alexander White",

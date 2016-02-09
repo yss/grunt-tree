@@ -89,7 +89,7 @@ mix(Tree.prototype, {
 });
 
 module.exports = function(grunt) {
-    grunt.registerMultiTask('tree', 'Parse a directory to a tree with json format.', function() {
+    grunt.registerMultiTask('fileTree', 'Parse a directory to a tree with json format.', function() {
         var options = this.options({
             cwd: '', // relative to the src directory
             prettify: false, 

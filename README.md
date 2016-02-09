@@ -1,5 +1,5 @@
 # grunt-tree
-Parse a directory to a tree with json format.
+Read the structure of directory into to a json file.
 
 
 ## Getting Started
@@ -282,25 +282,3 @@ module.exports = function(grunt) {
 };
 ```
 
-### Test
-```shell
-npm run-script test
-
-# Once you run the follow command in console, you should run `npm install` before.
-# grunt test
-```
-
-## Last
-
-About the version. The first two version is the same with `grunt` first two version.
-
-## Release History
-
-1. Compatibility fix for node 0.10.x. [2013/04/12] => for 0.4.1
-2. Add nodeunit test case. [2013/04/12] => for 0.4.2
-3. Add `ext` option for avoid the same name of key. [2013/06/03] => for 0.4.3
-4. Add `cwd` option for flexible configuration.  [2013/07/23] => for 0.4.4
-5. Add `exclude` option for filter useless file. And `uncpath`, `prettify` options. [2014/03/19] => for 0.4.5. 
-6. Use `grunt.file.match` for `exclude` option. [2014/05/19] => for 0.4.6.
-7. New construct for tree.js. Remove `exclude` and `md5` options. Add `hash` and `hashLen` options.  Replace `uncpath` to `isUNCPath` and `perttify` to `prettify`.
-8. Fix for Fatal Error!!! => 0.4.9
