@@ -51,13 +51,11 @@ Default Value: `''`
 
 Relative path to the src directory.
 
-#### ~~options.perttify~~ options.prettify
+#### options.prettify
 Type: `Boolean`
-Default value: `false`. Add in version `0.4.5`. Replace by `options.prettify`
+Default value: `false`. 
 
-This is new option for output style, It is equivalent to `JSON.stringify(json, null, perttify ? 2 : 0)`.
-
-Anyway, see the examples.
+Output will be equivalent to `JSON.stringify(json, null, prettify ? 2 : 0)`.
 
 ### Usage Examples
 
