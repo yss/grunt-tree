@@ -1,27 +1,6 @@
 # grunt-tree
-Parse a directory to a tree with json format.
+Read the structure of directory into to a json file.
 
-## Why I writen this plugin?
-I need build my static files with md5 version. I want to get this:
-``` js
-// js.json
-{
-    "base": "js/base.xxx.js",
-    "jquery": "js/jquery.xxx.js"
-}
-// or
-{
-    "www-base": "www/js/base.xxx.js",
-    "mobile-base": "mobile/js/base.xxx.js"
-}
-// css.json
-{
-    "base": "css/base.xxx.css"
-}
-```
-Then, I can get the real path via a function, no matter what the environment is development or production.
-
-> The best Grunt plugin ever.
 
 ## Getting Started
 This plugin requires Grunt `>=0.4.0`
@@ -29,34 +8,25 @@ This plugin requires Grunt `>=0.4.0`
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-tree --save-dev
+npm install grunt-file-tree --save-dev
 ```
 
 One the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-tree');
+grunt.loadNpmTasks('grunt-file-tree');
 ```
 
 ## The "tree" task
 
 ### Overview
-In your project's Gruntfile, add a section named `tree` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section named `fileTree` to the data object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-  tree: {
+  fileTree: {
     options: {
-        // hash: string | default: false | like 'md5'
-        // hashLen: number | default: false
-        // format: | boolean default: false
-        // type: array | default: []
-        // recurse: boolean | default: true
         // cwd: string | default: ""
-        // ext: object
-        //      ext.level: boolean or number [1-N] | default: false
-        //      ext.hyphen: string | default: "-"
-        // isUNCPath: boolean | default: false
         // prettify: boolean | default: false
     },
     your_target: {
@@ -75,97 +45,17 @@ grunt.initConfig({
 
 ### Options
 
-#### ~~options.md5~~
-Type: `Boolean|Number`
-Default value: `false`. Removed in version `0.4.8`, replaced by `options.hash`.
-
-Get the md5 value of the file and put in file name. If the value is number, then cut the full md5 value to the length.
-
-### options.hash
-Type: `String`
-Default value: `false`.
-
-Get the hash value of the file and insert before the postfix of file name. Value is the algorithm name, like md5.
-
-### options.hashLen
-Type: `Number`
-Default value: `false`
-
-Get the substring of hash value of file. `hashValue.substring(0, options.hashLen)`
-
-#### options.format
-Type: `Boolean`
-Default value: `false`
-
-A boolean value that what you want the format of result to be.
-
-The Default result is the tree format like the command tree.
-
-And if format set to true, then output a one-to-one mode. Becareful to set format to true, it will overwrite the same file name.
-
-#### options.type
-Type: `Array`
-Default value: `false`
-
-Filter the postfix of the files you set.
-
-#### options.recurse
-Type: `Boolean`
-Default value: `true`
-
-Whether recurse in your given directory.
-
 #### options.cwd
 Type: `String`
 Default Value: `''`
 
-Relative to the src directory.
+Relative path to the src directory.
 
-#### options.ext
-Type: `Object`
-Default value: `{ level:0, hyphen: "-" }`. Add in verison `0.4.4`.
-
-There is a new option for solve the problem of the same name in directory. 
-
-*Note:*
-
-*And the format option must be set to `true`*.
-
-The level option in options.ext means the subdirectory level.
-If file relative path is 'www/css/base.css' and level set to 1, then the result will be: `"www-base": "www/css/base.css"`.
-And if level set to 2, then the result will be: `"css-base": "www/css/base.css"`. But you set level to 3 in this condition, the result also is : `"base": "www/css/base.css"`.
-
-#### ~~options.exclude~~
-Type: `Array`
-Default value: `[]`. Add in version: `0.4.5`. Removed in version: `0.4.8`.
-
-This is new option for filter needless files. How to use? GO <http://gruntjs.com/api/grunt.file#grunt.file.match>
-
-*Note:*
-
-*This is relative to the value of `options.cwd`*.
-
-
-#### ~~options.uncpath~~ options.isUNCPath
+#### options.prettify
 Type: `Boolean`
-Default value: `false`. Add in version `0.4.5`. Replace by `options.isUNCPath`
+Default value: `false`. 
 
-This is new option for some people run in the windows system and they need unix path rather than the default windows path.
-
-So, if your project run in unix system, you can turn on it.
-
-#### ~~options.perttify~~ options.prettify
-Type: `Boolean`
-Default value: `false`. Add in version `0.4.5`. Replace by `options.prettify`
-
-This is new option for output style, It is equivalent to `JSON.stringify(json, null, perttify ? 2 : 0)`.
-
-Anyway, see the examples.
-
-### Caution
-This task is not support `Building the files object dynamically` in configuring-tasks of grunt.
-
-Go to [Building the files object dynamically](http://gruntjs.com/configuring-tasks#building-the-files-object-dynamically), see more infomation.
+Output will be equivalent to `JSON.stringify(json, null, prettify ? 2 : 0)`.
 
 ### Usage Examples
 
@@ -390,25 +280,3 @@ module.exports = function(grunt) {
 };
 ```
 
-### Test
-```shell
-npm run-script test
-
-# Once you run the follow command in console, you should run `npm install` before.
-# grunt test
-```
-
-## Last
-
-About the version. The first two version is the same with `grunt` first two version.
-
-## Release History
-
-1. Compatibility fix for node 0.10.x. [2013/04/12] => for 0.4.1
-2. Add nodeunit test case. [2013/04/12] => for 0.4.2
-3. Add `ext` option for avoid the same name of key. [2013/06/03] => for 0.4.3
-4. Add `cwd` option for flexible configuration.  [2013/07/23] => for 0.4.4
-5. Add `exclude` option for filter useless file. And `uncpath`, `prettify` options. [2014/03/19] => for 0.4.5. 
-6. Use `grunt.file.match` for `exclude` option. [2014/05/19] => for 0.4.6.
-7. New construct for tree.js. Remove `exclude` and `md5` options. Add `hash` and `hashLen` options.  Replace `uncpath` to `isUNCPath` and `perttify` to `prettify`.
-8. Fix for Fatal Error!!! => 0.4.9

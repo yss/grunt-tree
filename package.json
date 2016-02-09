@@ -1,23 +1,23 @@
 {
-  "name": "grunt-tree",
-  "description": "Parse a directory to a tree with json format.",
-  "version": "0.4.9",
-  "homepage": "https://github.com/yss/grunt-tree",
+  "name": "grunt-file-tree",
+  "description": "Parse a directory to json object containing folder and file names.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/honkskillet/grunt-file-tree",
   "author": {
-    "name": "yansong",
-    "email": "yss.nelson@gmail.com"
+    "name": "Alexander White",
+    "email": "honkskillet@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/yss/grunt-tree.git"
+    "url": "git://github.com/honkskillet/grunt-file-tree.git"
   },
   "bugs": {
-    "url": "https://github.com/yss/grunt-tree/issues"
+    "url": "https://github.com/honkskillet/grunt-file-tree/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/yss/grunt-tree/blob/master/LICENSE-MIT"
+      "url": "https://github.com/honkskillet/grunt-file-tree/blob/master/LICENSE-MIT"
     }
   ],
   "main": "Gruntfile.js",
