@@ -1,5 +1,5 @@
 {
-    "a": "a.css",
+    "a.css": "a.css",
     "c": "c",
-    "b": "js\\b.js"
+    "js\\b.js": "b.js"
 }

@@ -1,6 +1,6 @@
 {
-    "a": "a.css",
+    "a.css": "a.css",
     "js": {
-        "b": "js/b.js"
+        "b.js": "b.js"
     }
 }
