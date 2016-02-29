@@ -69,24 +69,36 @@ mix(Tree.prototype, {
             if (options._typeReg && !options._typeReg.test(filename)) {
                 return;
             }
+
+            var filenameWithVersion = this.getFileName(abspath, filename);
             /**
              * _tree = {
              *  "relativePath": "filenameWithVersion"
              * }
              */
-            this._tree[Path.join(options.cwd, subdir || '', filename)] = this.getFileName(abspath, filename);
+            this._tree[Path.join(options.cwd, subdir || '', filename)] = filenameWithVersion;
+
+            if (typeof options.outputDirectory !== 'undefined') {
+                if (options._outputTypeReg && !options._outputTypeReg.test(filename)) {
+                    return;
+                }
+                filename = Path.join(options.outputDirectory, filenameWithVersion);
+
+                grunt.file.copy(abspath, filename);
+                grunt.log.write('File "' + filename + '" is created.');
+            }
         }
     },
 
     /**
-     * output a tree with format
+     * output a tree without format
      * { "relativePath": "filenameWithVersion" }
      * =====>>>>>>>
      * { "pathname" : { "pathname": "filenameWithVersion" } }
      *
      * @returns {Object}
      */
-    parseTreeWithFormat: function() {
+    parseTreeWithoutFormat: function() {
         var tree = this._tree,
             newTree = {};
 
@@ -132,7 +144,7 @@ mix(Tree.prototype, {
             });
 
             if (!options.format) {
-                _this._tree = _this.parseTreeWithFormat();
+                _this._tree = _this.parseTreeWithoutFormat();
             }
 
             _this.grunt.file.write(file.dest, JSON.stringify(_this._tree, null, options.prettify));
@@ -148,8 +160,10 @@ module.exports = function(grunt) {
             prettify: 0, // number or boolean
             recurse: true,
             // type: [],
-            //hash: 'md5',
-            //hashLen: 8,
+            // hash: 'md5',
+            // hashLen: 8,
+            // outputType: [],
+            // outputDirectory: '',
             cwd: '', // relative to the src directory
             format: false
         });
@@ -162,6 +176,10 @@ module.exports = function(grunt) {
 
         if (grunt.util.kindOf(options.type) === 'array') {
             options._typeReg = new RegExp('\\.(?:' + options.type.join('|') + ')$');
+        }
+
+        if (grunt.util.kindOf(options.outputType) === 'array') {
+            options._outputTypeReg = new RegExp('\\.(?:' + options.outputType.join('|') + ')$');
         }
 
         new Tree(grunt, this.files, options);

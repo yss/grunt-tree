@@ -11,7 +11,7 @@ I need build my static files with md5 version. The follows is what I want to get
     "static/css/base.css": "xxxx-base.css"
 }
 ```
-Then, I do not need care about the cache of static files in production environment.
+Then, I do not need care about the cache of static files in production environment by create files with md5 version.
 
 Only I need to do is create a get static files function to get it.
 
@@ -90,7 +90,7 @@ And if format set to true, then output a one-to-one mode.
 Type: `Array`
 Default value: `false`
 
-Filter the postfix of the files you set.
+Filter the postfix of the files you set. This is can be replaced by set `src` option with pattern.
 
 #### options.recurse
 Type: `Boolean`
@@ -111,6 +111,20 @@ Default value: `0`.
 For output style, if set to true, It is equivalent to `JSON.stringify(json, null, 4)`.
 
 Anyway, see the examples.
+
+### options.outputType
+Type: `Array`
+Default value: `false`
+Add in version `1.1.1`
+
+Filter the postfix of the files you set to output.
+
+### options.outputDirectory
+Type: `String`
+Default value: `false`
+Add in version `1.1.1`
+
+The directory of files output.
 
 ### Caution
 This task is not support `Building the files object dynamically` in configuring-tasks of grunt.
@@ -177,6 +191,19 @@ grunt.initConfig({
     "c": "c"
 }
 
+// 6. change the options to: { outputType: ['js'], outputDirectory: '/tmp' }, and result will be like:
+// /tmp/output.json
+{
+    "a.css": "a.css",
+    "js": {
+        "b.js": "b.js"
+    },
+    "c": "c"
+}
+// New file created in /tmp directory
+// /tmp/b.js
+
+
 // 7. try to mix the options, and have a look.
 ...
 
@@ -195,3 +222,4 @@ About the version. The first version is the same with `grunt` first version.
 ## Release History
 
 1. New Start. [2016/02/27] => for 1.0.1
+2. Add `option.outputType` and `option.outputDirectory`. [2016/02/29] => for 1.1.1

@@ -1,7 +1,7 @@
 {
   "name": "grunt-tree",
   "description": "Parse a directory to a tree with json format.",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "homepage": "https://github.com/yss/grunt-tree",
   "author": {
     "name": "yansong",

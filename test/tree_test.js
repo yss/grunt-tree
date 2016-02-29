@@ -84,5 +84,14 @@ exports.tree = {
 
         test.deepEqual(actual, expected, 'Not equal at type method.');
         test.done();
+    },
+
+    md5WithOuput: function(test) {
+        test.expect(1);
+
+        var actual = grunt.file.readJSON('tmp/md5.json');
+
+        test.equal(grunt.file.read('./tmp/' + actual["a.css"]), grunt.file.read("./test/tree/a.css"), 'The content of output file is different.');
+        test.done();
     }
 };

@@ -81,41 +81,20 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            ext: {
+
+            md5WithOuput: {
                 options: {
-                    format: true,
-                    ext: {
-                        level: 1
-                    }
+                    hash: 'md5',
+                    hashLen: 8,
+                    outputType: ['css'],
+                    outputDirectory: 'tmp/'
                 },
                 files: [
                     {
                         src: [SRC_PATH],
-                        dest: 'tmp/ext.json'
+                        dest: 'tmp/md5.json'
                     }
                 ]
-            //},
-            //exclude: {
-            //    options: {
-            //        exclude: ['a.css']
-            //    },
-            //    files: [
-            //        {
-            //            src: [SRC_PATH],
-            //            dest: 'tmp/exclude.json'
-            //        }
-            //    ]
-            //},
-            //excludeAll: {
-            //    options: {
-            //        exclude: ['*', '**']
-            //    },
-            //    files: [
-            //        {
-            //            src: [SRC_PATH],
-            //            dest: 'tmp/excludeAll.json'
-            //        }
-            //    ]
             }
         },
 
