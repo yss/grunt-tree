@@ -1,4 +1,4 @@
-# grunt-tree v1.0.1
+# grunt-tree v1.1.1
 > Parse a directory to a tree with json format.
 
 ## Why I writen this plugin?
@@ -41,12 +41,14 @@ grunt.initConfig({
   tree: {
     options: {
         // hash: String, default: null, like 'md5' or 'sha1'
-        // hashLen: Number, default: false
+        // hashLen: Number, default: null
         // format: Boolean, default: false
-        // type: Array, default: []
+        // type: Array, default: null
         // recurse: Boolean, default: true
         // cwd: String, default: ""
         // prettify: Boolean|number, default: 0
+        // outputType: Array, default: null
+        // outputDirectory: String, default: false
     },
     your_target: {
       /** contents like this:
@@ -64,13 +66,13 @@ grunt.initConfig({
 
 ### Options
 
-### options.hash
+#### options.hash
 Type: `String`
 Default value: `null`.
 
 Get the hash value of the file and insert before the file name with '-'. Value is the algorithm name, like md5,sha1.
 
-### options.hashLen
+#### options.hashLen
 Type: `Number`
 Default value: `false`
 
@@ -88,7 +90,7 @@ And if format set to true, then output a one-to-one mode.
 
 #### options.type
 Type: `Array`
-Default value: `false`
+Default value: `null`
 
 Filter the postfix of the files you set. This is can be replaced by set `src` option with pattern.
 
@@ -112,14 +114,14 @@ For output style, if set to true, It is equivalent to `JSON.stringify(json, null
 
 Anyway, see the examples.
 
-### options.outputType
+#### options.outputType
 Type: `Array`
-Default value: `false`
+Default value: `null`
 Add in version `1.1.1`
 
 Filter the postfix of the files you set to output.
 
-### options.outputDirectory
+#### options.outputDirectory
 Type: `String`
 Default value: `false`
 Add in version `1.1.1`
@@ -181,7 +183,7 @@ grunt.initConfig({
 {
     "a.css": "a.css",
     "js": {
-        "b.js": "js/b.js"
+        "b.js": "b.js"
     }
 }
 
