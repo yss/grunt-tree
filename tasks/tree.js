@@ -72,11 +72,21 @@ mix(Tree.prototype, {
 
             var filenameWithVersion = this.getFileName(abspath, filename);
             /**
+             * if switchFormat false (default : false)
              * _tree = {
              *  "relativePath": "filenameWithVersion"
              * }
+             * else switch format is true
+             *
+             * _tree = {
+                 "filenameWithVersion" : "relativePath"
+             }
              */
-            this._tree[Path.join(options.cwd, subdir || '', filename)] = filenameWithVersion;
+            if(options.switchFormat){
+                this._tree[filenameWithVersion] = Path.join(options.cwd, subdir || '', filename);
+            } else{
+                this._tree[Path.join(options.cwd, subdir || '', filename)] = filenameWithVersion;
+            }
 
             if (typeof options.outputDirectory !== 'undefined') {
                 if (options._outputTypeReg && !options._outputTypeReg.test(filename)) {
